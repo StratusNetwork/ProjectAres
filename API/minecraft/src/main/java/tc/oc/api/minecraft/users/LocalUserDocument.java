@@ -14,19 +14,25 @@ import tc.oc.api.docs.PlayerId;
 import tc.oc.api.docs.SimplePlayerId;
 import tc.oc.api.docs.User;
 import tc.oc.api.docs.virtual.UserDoc;
-import tc.oc.api.util.Permissions;
-import tc.oc.minecraft.api.entity.OfflinePlayer;
+import tc.oc.api.minecraft.servers.DefaultPermissions;
 
 public class LocalUserDocument extends SimplePlayerId implements User {
 
-    private final OfflinePlayer player;
+    private final UUID uuid;
+    private final String ip;
 
-    public LocalUserDocument(OfflinePlayer player) {
-        super(player.getUniqueId().toString(),
-              player.getUniqueId().toString(),
-              player.getLastKnownName().orElse(""));
+    LocalUserDocument(UUID uuid, String name, String ip) {
+        super(uuid.toString(), uuid.toString(), name);
+        this.uuid = uuid;
+        this.ip = ip;
+    }
 
-        this.player = player;
+    LocalUserDocument(tc.oc.minecraft.api.user.User user) {
+        this(user.getUniqueId(),
+             user.getName(),
+             user.onlinePlayer()
+                 .map(p -> p.getAddress().getHostString())
+                 .orElse(""));
     }
 
     @Override
@@ -41,7 +47,7 @@ public class LocalUserDocument extends SimplePlayerId implements User {
 
     @Override
     public UUID uuid() {
-        return player.getUniqueId();
+        return uuid;
     }
 
     @Override
@@ -76,9 +82,7 @@ public class LocalUserDocument extends SimplePlayerId implements User {
 
     @Override
     public String mc_last_sign_in_ip() {
-        return player.onlinePlayer()
-                     .map(p -> p.getAddress().getHostString())
-                     .orElse("");
+        return ip;
     }
 
     @Override
@@ -89,9 +93,7 @@ public class LocalUserDocument extends SimplePlayerId implements User {
     @Override
     public Map<String, Map<String, Boolean>> mc_permissions_by_realm() {
         return ImmutableMap.of(
-            "global", ImmutableMap.of(
-                Permissions.LOGIN, true
-            )
+            "global", DefaultPermissions.DEFAULT_PERMISSIONS
         );
     }
 

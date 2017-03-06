@@ -1,9 +1,9 @@
 package tc.oc.api;
 
-import tc.oc.api.connectable.ConnectablesManifest;
 import tc.oc.api.document.DocumentsManifest;
 import tc.oc.api.engagement.EngagementModelManifest;
 import tc.oc.api.games.GameModelManifest;
+import tc.oc.api.http.HttpManifest;
 import tc.oc.api.maps.MapModelManifest;
 import tc.oc.api.match.MatchModelManifest;
 import tc.oc.api.message.MessagesManifest;
@@ -30,7 +30,7 @@ public final class ApiManifest extends HybridManifest {
         install(new DocumentsManifest());
         install(new MessagesManifest());
         install(new ModelsManifest());
-        install(new ConnectablesManifest());
+        install(new HttpManifest());
 
         install(new ServerModelManifest());
         install(new UserModelManifest());
