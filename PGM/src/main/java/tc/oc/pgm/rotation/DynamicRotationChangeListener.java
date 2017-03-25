@@ -3,8 +3,10 @@ package tc.oc.pgm.rotation;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import tc.oc.pgm.Config;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.cycle.CycleMatchModule;
 import tc.oc.pgm.events.MatchEndEvent;
@@ -35,19 +37,20 @@ public class DynamicRotationChangeListener implements Listener {
     }
 
     /**
-     * Returns MINI if players < 16
-     * Returns MEDIUM if 16 < players < 40
-     * Returns MEGA if players > 40
+     * Returns appropriate rotation looking at how many players (participating) are online.
      *
      * @param players Current participant player count.
      * @param rotationManager The {@link RotationManager}
      * @return any of {@link RotationCategory}
      */
     private RotationCategory getAppropriateRotationCategory(int players, RotationManager rotationManager) {
-        if (players <= 16 && rotationManager.getRotation("mini") != null) return RotationCategory.MINI;
-        if (players > 16 && players <= 40 && rotationManager.getRotation("medium") != null) return RotationCategory.MEDIUM;
-        if (players > 40 && rotationManager.getRotation("mega") != null) return RotationCategory.MEGA;
+        Configuration config = Config.getConfiguration();
+        int medium = config.getInt("rotation.providers.file.medium.count");
+        int mega = config.getInt("rotation.providers.file.mega.count");
 
-        return null;
+        if (players > medium && players <= mega && rotationManager.getRotation("medium") != null) return RotationCategory.MEDIUM;
+        if (players > mega && rotationManager.getRotation("mega") != null) return RotationCategory.MEGA;
+
+        return RotationCategory.MINI;
     }
 }
