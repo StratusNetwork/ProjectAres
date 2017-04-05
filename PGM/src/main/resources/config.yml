@@ -222,3 +222,6 @@ freeze:
   remove-tnt:
     victim-radius: 10
     sender-radius: 10
+
+match-info:
+  link-enabled: true
