@@ -33,3 +33,7 @@ datadog:
   enabled: false
   host: localhost
   port: 8125
+
+raindrops:
+  singular: "Raindrop"
+  plural: "Raindrops"
