@@ -170,11 +170,11 @@ public class MutationCommands implements NestedCommands {
         if(queued) {
             // Send the queued changes off to the api
             syncExecutor.callback(
-                value ? mutationQueue.mergeAll(mutations)
-                      : mutationQueue.removeAll(mutations),
-                result -> {
-                    origin.sendMessage(new Component(new TranslatableComponent(message, changed), ChatColor.WHITE));
-                }
+                    value ? mutationQueue.mergeAll(mutations)
+                            : mutationQueue.removeAll(mutations),
+                    result -> {
+                        origin.sendMessage(new Component(new TranslatableComponent(message, changed), ChatColor.WHITE));
+                    }
             );
         } else {
             // Make the changes immediately
@@ -185,10 +185,10 @@ public class MutationCommands implements NestedCommands {
                 } catch(Throwable t) {
                     module.register(mutation, !value);
                     origin.sendMessage(
-                        new WarningComponent(
-                            "command.mutation.error.mutate",
-                            mutation.getComponent(ChatColor.RED)
-                        )
+                            new WarningComponent(
+                                    "command.mutation.error.mutate",
+                                    mutation.getComponent(ChatColor.RED)
+                            )
                     );
                     module.getLogger().log(Level.SEVERE, "Unable to enable/disable mutation", t);
                     return;
