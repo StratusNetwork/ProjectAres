@@ -10,19 +10,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.mutation.types.MutationModule;
-import tc.oc.pgm.mutation.types.kit.ArmorMutation;
-import tc.oc.pgm.mutation.types.kit.ElytraMutation;
-import tc.oc.pgm.mutation.types.kit.EnchantmentMutation;
-import tc.oc.pgm.mutation.types.kit.EquestrianMutation;
-import tc.oc.pgm.mutation.types.kit.ExplosiveMutation;
-import tc.oc.pgm.mutation.types.kit.GlowMutation;
-import tc.oc.pgm.mutation.types.kit.HardcoreMutation;
-import tc.oc.pgm.mutation.types.kit.HealthMutation;
-import tc.oc.pgm.mutation.types.kit.JumpMutation;
-import tc.oc.pgm.mutation.types.kit.MobsMutation;
-import tc.oc.pgm.mutation.types.kit.PotionMutation;
-import tc.oc.pgm.mutation.types.kit.ProjectileMutation;
-import tc.oc.pgm.mutation.types.kit.StealthMutation;
+import tc.oc.pgm.mutation.types.kit.*;
 import tc.oc.pgm.mutation.types.other.BlitzMutation;
 import tc.oc.pgm.mutation.types.other.RageMutation;
 import tc.oc.pgm.mutation.types.targetable.ApocalypseMutation;
@@ -50,7 +38,9 @@ public enum Mutation {
     MOBS       (MobsMutation.class),
     LIGHTNING  (LightningMutation.class),
     BOMBER     (BomberMutation.class),
-    APOCALYPSE (ApocalypseMutation.class);
+    APOCALYPSE (ApocalypseMutation.class),
+    TOOLS      (ToolsMutation.class),
+    CANNON     (CannonMutation.class);
 
     public static final String TYPE_KEY = "mutation.type.";
     public static final String DESCRIPTION_KEY = ".desc";
