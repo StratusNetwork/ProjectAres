@@ -1,6 +1,7 @@
 package tc.oc.pgm.commands;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -45,7 +46,8 @@ public class MapCommands {
     @Command(
         aliases = {"maplist", "maps", "ml"},
         desc = "Shows the maps that are currently loaded",
-        usage = "[page]",
+        usage = "[-a author] [-g gamemode] [page]",
+        flags = "a:g:",
         min = 0,
         max = 1,
         help = "Shows all the maps that are currently loaded including ones that are not in the rotation."
@@ -54,11 +56,53 @@ public class MapCommands {
     public static void maplist(CommandContext args, final CommandSender sender) throws CommandException {
         final Set<PGMMap> maps = ImmutableSortedSet.copyOf(new PGMMap.DisplayOrder(), PGM.getMatchManager().getMaps());
 
+        List<PGMMap> mapsToDisplay = new ArrayList<PGMMap>();
+
+        String authorSearch = args.getFlag('a');
+        String gamemodeSearch = args.getFlag('g');
+
+        for (PGMMap map: maps) {
+            boolean hasAuthor = false;
+            boolean hasGamemode = false;
+
+            if (authorSearch == null || authorSearch.isEmpty()) {
+                hasAuthor = true;
+            } else {
+                List<Contributor> authors = map.getInfo().getNamedAuthors();
+                if (authors != null && !authors.isEmpty()) {
+                    for (Contributor author: authors) {
+                        if (author.getName().toLowerCase().indexOf(authorSearch.toLowerCase()) != -1) {
+                            hasAuthor = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (gamemodeSearch == null || gamemodeSearch.isEmpty()) {
+                hasGamemode = true;
+            } else {
+                Set<MapDoc.Gamemode> gamemodes = map.getDocument().gamemode();
+                if (gamemodes != null && !gamemodes.isEmpty()) {
+                    for (MapDoc.Gamemode mode: gamemodes) {
+                        if (mode.name().equals(gamemodeSearch.toLowerCase())) {
+                            hasGamemode = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasAuthor && hasGamemode) {
+                mapsToDisplay.add(map);
+            }
+        }
+
         new PrettyPaginatedResult<PGMMap>(PGMTranslations.get().t("command.map.mapList.title", sender)) {
             @Override public String format(PGMMap map, int index) {
                 return (index + 1) + ". " + map.getInfo().getShortDescription(sender);
             }
-        }.display(new BukkitWrappedCommandSender(sender), maps, args.getInteger(0, 1) /* page */);
+        }.display(new BukkitWrappedCommandSender(sender), mapsToDisplay, args.getInteger(0, 1) /* page */);
     }
 
     private static BaseComponent mapInfoLabel(String key) {
