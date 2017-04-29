@@ -47,16 +47,7 @@ import tc.oc.pgm.filters.matcher.party.GoalFilter;
 import tc.oc.pgm.filters.matcher.party.RankFilter;
 import tc.oc.pgm.filters.matcher.party.ScoreFilter;
 import tc.oc.pgm.filters.matcher.party.TeamFilter;
-import tc.oc.pgm.filters.matcher.player.AttributeFilter;
-import tc.oc.pgm.filters.matcher.player.CanFlyFilter;
-import tc.oc.pgm.filters.matcher.player.CarryingFlagFilter;
-import tc.oc.pgm.filters.matcher.player.CarryingItemFilter;
-import tc.oc.pgm.filters.matcher.player.HoldingItemFilter;
-import tc.oc.pgm.filters.matcher.player.KillStreakFilter;
-import tc.oc.pgm.filters.matcher.player.ParticipatingFilter;
-import tc.oc.pgm.filters.matcher.player.PlayerClassFilter;
-import tc.oc.pgm.filters.matcher.player.PoseFilter;
-import tc.oc.pgm.filters.matcher.player.WearingItemFilter;
+import tc.oc.pgm.filters.matcher.player.*;
 import tc.oc.pgm.filters.operator.AllFilter;
 import tc.oc.pgm.filters.operator.AnyFilter;
 import tc.oc.pgm.filters.operator.FallthroughFilter;
@@ -301,6 +292,24 @@ public class FilterDefinitionParser extends MagicMethodFeatureParser<Filter> imp
     @MethodParser("can-fly")
     public CanFlyFilter parseCanFly(Element el) throws InvalidXMLException {
         return new CanFlyFilter();
+    }
+
+    @MethodParser("hunger")
+    public PlayerHungerFilter parseHunger(Element el) throws InvalidXMLException {
+        String type = el.getAttributeValue("case", "equal");
+        if (!type.equals("equal") && !type.equals("above") && !type.equals("below")) {
+            type = "equal";
+        }
+        return new PlayerHungerFilter(XMLUtils.parseNumber(el, Integer.class), type);
+    }
+
+    @MethodParser("health")
+    public PlayerHealthFilter parseHealth(Element el) throws InvalidXMLException {
+        String type = el.getAttributeValue("case", "equal");
+        if (!type.equals("equal") && !type.equals("above") && !type.equals("below")) {
+            type = "equal";
+        }
+        return new PlayerHealthFilter(XMLUtils.parseNumber(el, Integer.class), type);
     }
 
     private Filter parseExplicitTeam(Element el, CompetitorFilter filter) throws InvalidXMLException {

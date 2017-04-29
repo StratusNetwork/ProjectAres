@@ -31,7 +31,6 @@ public class RageMutation extends KitMutation {
         addRageItems();
         itemsRemoved = new WeakHashMap<>();
         this.rage = match.module(RageMatchModule.class).orElse(new RageMatchModule(match));
-        this.rewards.add(new KillReward(new FreeItemKit(item(Material.ARROW))));
     }
 
     private void addRageItems() {
