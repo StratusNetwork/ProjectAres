@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -270,7 +271,7 @@ public class EventFilterMatchModule extends MatchModule implements Listener {
     // --------------------------
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onAttack(final PlayerAttackEntityEvent event) {
-        if(cancelUnlessInteracting(event, event.getPlayer())) {
+        if(event.getPlayer().getGameMode() != GameMode.SPECTATOR && cancelUnlessInteracting(event, event.getPlayer())) {
             final MatchPlayer attacker = getMatch().getPlayer(event.getPlayer());
             if(attacker == null || attacker.isSpawned()) return;
             getMatch().callEvent(new ObserverInteractEvent(attacker, ClickType.LEFT, null, event.getLeftClicked(), event.getPlayer().getInventory().getItemInMainHand()));
