@@ -2,6 +2,7 @@ package tc.oc.pgm.commands;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -35,8 +36,11 @@ import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.ffa.FreeForAllModule;
 import tc.oc.pgm.map.Contributor;
 import tc.oc.pgm.map.MapInfo;
+import tc.oc.pgm.map.MapModule;
 import tc.oc.pgm.map.PGMMap;
 import tc.oc.pgm.modules.InfoModule;
+import tc.oc.pgm.modules.MaxBuildHeightMatchModule;
+import tc.oc.pgm.modules.MaxBuildHeightModule;
 import tc.oc.pgm.rotation.RotationManager;
 import tc.oc.pgm.rotation.RotationProviderInfo;
 import tc.oc.pgm.rotation.RotationState;
@@ -214,6 +218,18 @@ public class MapCommands {
             mapInfoLabel("command.map.mapInfo.playerLimit"),
             new Component(String.valueOf(maxPlayers), ChatColor.GOLD)
         ));
+
+        Collection<MapModule> modules = map.getContext().loadedModules();
+        for (MapModule module: modules) {
+            if (module instanceof MaxBuildHeightModule) {
+                MaxBuildHeightModule buildHeightModule = (MaxBuildHeightModule) module;
+                int buildHeight = buildHeightModule.getBuildHeight();
+                audience.sendMessage(new Component(
+                        mapInfoLabel("command.map.mapInfo.buildHeight"),
+                        new Component(String.valueOf(buildHeight), ChatColor.GOLD)
+                ));
+            }
+        }
 
         if(sender.hasPermission(Permissions.MAPDEV)) {
             audience.sendMessage(new Component(mapInfoLabel("command.map.mapInfo.genre"), new Component(mapInfo.getLocalizedGenre(), ChatColor.GOLD)));
