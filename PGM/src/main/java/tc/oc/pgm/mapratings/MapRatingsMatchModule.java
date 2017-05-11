@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -48,6 +50,8 @@ import tc.oc.pgm.match.MatchPlayerExecutor;
 import tc.oc.pgm.match.MatchScope;
 import tc.oc.pgm.match.MultiPlayerParty;
 import tc.oc.pgm.settings.Settings;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @ListenerScope(MatchScope.LOADED)
 public class MapRatingsMatchModule extends MatchModule implements Listener {
@@ -118,6 +122,12 @@ public class MapRatingsMatchModule extends MatchModule implements Listener {
 
     private static String formatScore(@Nullable Integer score) {
         return score == null ? "" : BUTTON_LABEL_COLORS[score - 1].toString() + ChatColor.BOLD + score;
+    }
+
+    private double averageScore() {
+        checkNotNull(this.playerRatings.values());
+        return this.playerRatings.entrySet().stream().mapToInt(Map.Entry::getValue).average().getAsDouble();
+
     }
 
     public int getMinimumScore() {
@@ -293,7 +303,9 @@ public class MapRatingsMatchModule extends MatchModule implements Listener {
                         viewer.getBukkit(),
                         rater.getParty().getColoredName(),
                         formatScore(score),
-                        formatScore(oldScore)
+                        formatScore(oldScore),
+
+                            averageScore()
                     ));
                 } else {
                     viewer.sendMessage(PGMTranslations.get().t(
@@ -301,7 +313,8 @@ public class MapRatingsMatchModule extends MatchModule implements Listener {
                         oldScore == null ? "rating.create.notify.ffa" : "rating.update.notify.ffa",
                         viewer.getBukkit(),
                         formatScore(score),
-                        formatScore(oldScore)
+                        formatScore(oldScore),
+                            averageScore()
                     ));
                 }
             }
@@ -430,4 +443,6 @@ public class MapRatingsMatchModule extends MatchModule implements Listener {
              .filter(player -> player.isObserving() && canShowDialog(player))
              .ifPresent(player -> player.getInventory().setItem(OPEN_BUTTON_SLOT, getOpenButton(player)));
     }
+
+
 }

@@ -29,6 +29,7 @@ public class RaindropUtil {
     @Inject private static SyncPlayerExecutorFactory playerExecutorFactory;
     @Inject private static EventBus eventBus;
     @Inject private static Audiences audiences;
+    @Inject private static RaindropConfiguration configuration;
 
     public static int useMultiplier(int count, int multiplier) {
         return (int) (count * multiplier / 100f);
@@ -156,7 +157,7 @@ public class RaindropUtil {
     private static BaseComponent raindropsMessage(int count, int multiplier, @Nullable BaseComponent reason) {
         Component message = new Component(ChatColor.GRAY);
         message.extra(new Component((count > 0 ? "+" : "") + count, ChatColor.GREEN, ChatColor.BOLD),
-                      new Component(" Raindrop" + (count == 1 || count == -1 ? "" : "s"), ChatColor.AQUA));
+                      new Component("" + (count == 1 || count == -1 ? configuration.singular() : configuration.plural()), ChatColor.AQUA));
         if(multiplier != 100) {
             message.extra(new Component(" | ", ChatColor.DARK_PURPLE),
                           new Component((multiplier / 100f) + "x", ChatColor.GOLD, ChatColor.ITALIC));
