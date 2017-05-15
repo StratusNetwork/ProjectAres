@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import javax.inject.Inject;
 
 import me.anxuiz.settings.SettingManager;
+import me.anxuiz.settings.bukkit.PlayerSettings;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.event.EventPriority;
@@ -13,14 +14,11 @@ import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.scheduler.Task;
 import tc.oc.pgm.events.ListenerScope;
 import tc.oc.pgm.events.MatchPlayerDeathEvent;
-import tc.oc.pgm.match.MatchPlayer;
-import tc.oc.pgm.match.MatchPlayerFacet;
-import tc.oc.pgm.match.MatchScheduler;
-import tc.oc.pgm.match.MatchScope;
+import tc.oc.pgm.match.*;
 import tc.oc.pgm.match.inject.ForRunningMatch;
 
 @ListenerScope(MatchScope.RUNNING)
-public class StatsPlayerFacet implements MatchPlayerFacet, Listener {
+public class StatsPlayerFacet extends MatchModule implements MatchPlayerFacet, Listener {
 
     private static final int DISPLAY_TICKS = 60;
     private static final DecimalFormat FORMAT = new DecimalFormat("0.00");
@@ -44,6 +42,10 @@ public class StatsPlayerFacet implements MatchPlayerFacet, Listener {
         if (event.isVictim(this.player) || event.isKiller(this.player)) update();
     }
 
+    private ActionBarSettings.Options settings(MatchPlayer matchPlayer) {
+        return PlayerSettings.getManager(matchPlayer.getBukkit()).getValue(ActionBarSettings.get(), ActionBarSettings.Options.class);
+    }
+
     private void update() {
         if (!settings.getValue(StatSettings.STATS, Boolean.class)) return;
         if (task != null) {
@@ -53,9 +55,10 @@ public class StatsPlayerFacet implements MatchPlayerFacet, Listener {
             int ticks = DISPLAY_TICKS;
             @Override
             public void run() {
-                if (--ticks > 0) {
+                //Added to handle ActionBarSettings - NEVER, DEATH , ALL
+                if (--ticks > 0 && settings(player).equals(ActionBarSettings.Options.DEATH) && settings(player).equals(ActionBarSettings.Options.ALL)) {
                     player.sendHotbarMessage(getMessage());
-                } else {
+                } else if (--ticks <= 0){
                     delete();
                 }
             }
