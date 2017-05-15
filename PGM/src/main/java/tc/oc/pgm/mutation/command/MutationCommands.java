@@ -42,6 +42,8 @@ public class MutationCommands implements NestedCommands {
     public static final String PERMISSION_SET = "mutation.set";
     public static final String PERMISSION_LIST = "mutation.list";
 
+    private static MutationCommands instance;
+
     public static class Parent implements Commands {
         @Command(
                 aliases = {"mutation", "mutations", "mutate", "mt"},
@@ -64,6 +66,7 @@ public class MutationCommands implements NestedCommands {
         this.audiences = audiences;
         this.mutationQueue = mutationQueue;
         this.identityProvider = identityProvider;
+        this.instance = this;
     }
 
     @Command(
@@ -215,4 +218,16 @@ public class MutationCommands implements NestedCommands {
         }
     }
 
+<<<<<<< HEAD
 }
+=======
+    public static MutationCommands getInstance() {
+        return instance;
+    }
+
+    public MutationQueue getMutationQueue() {
+        return mutationQueue;
+    }
+
+}
+>>>>>>> upstream/master
