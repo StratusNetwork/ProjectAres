@@ -50,11 +50,10 @@ public class EnchantmentMutation extends KitMutation {
             .build();
 
     final static ImmutableMap<Enchantment, Integer> TOOLS_MAP = new ImmutableMap.Builder<Enchantment, Integer>()
-            .put(Enchantment.DIG_SPEED,         10)
-            .put(Enchantment.SILK_TOUCH,        5)
-            .put(Enchantment.LOOT_BONUS_BLOCKS, 5)
-            .put(Enchantment.LOOT_BONUS_MOBS,   5)
-            .put(Enchantment.LUCK,              1)
+            .put(Enchantment.DIG_SPEED,         15)
+            .put(Enchantment.DURABILITY,        10)
+            .put(Enchantment.SILK_TOUCH,        1)
+            .put(Enchantment.LOOT_BONUS_BLOCKS, 1)
             .build();
 
     final static ImmutableMap<Enchantment, Integer> BOWS_MAP = new ImmutableMap.Builder<Enchantment, Integer>()
@@ -66,6 +65,7 @@ public class EnchantmentMutation extends KitMutation {
     final static Map<Enchantment, Integer> FISHING_MAP = new ImmutableMap.Builder<Enchantment, Integer>()
             .put(Enchantment.KNOCKBACK, 3)
             .put(Enchantment.LURE,      1)
+            .put(Enchantment.LUCK,      1)
             .build();
 
     final static WeightedRandomChooser<Integer, Integer> LEVELS = new ImmutableWeightedRandomChooser<>(LEVELS_MAP);
@@ -88,6 +88,8 @@ public class EnchantmentMutation extends KitMutation {
         WeightedRandomChooser<Enchantment, Integer> chooser;
         if(item == null || ItemUtils.isNothing(item)) {
             return;
+        } else if(ItemUtils.isTool(item)) {
+            chooser = TOOLS;
         } else if(ItemUtils.isWeapon(item)) {
             chooser = WEAPONS;
         } else if(ItemUtils.isArmor(item)) {
@@ -96,8 +98,6 @@ public class EnchantmentMutation extends KitMutation {
             } else {
                 chooser = ARMOR;
             }
-        } else if(ItemUtils.isTool(item)) {
-            chooser = TOOLS;
         } else if(Material.FISHING_ROD.equals(item.getType())) {
             chooser = FISHING;
         } else if(Material.BOW.equals(item.getType())) {

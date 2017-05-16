@@ -25,6 +25,10 @@ public class MaxBuildHeightModule implements MapModule, MatchModuleFactory<MaxBu
         return new MaxBuildHeightMatchModule(match, this.buildHeight);
     }
 
+    public int getBuildHeight() {
+        return buildHeight;
+    }
+
     // ---------------------
     // ---- XML Parsing ----
     // ---------------------
