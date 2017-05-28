@@ -63,6 +63,7 @@ public class MutationTokenInterface extends ChestInterface {
         buttons.add(getMutationButton(Mutation.BLITZ, Material.IRON_FENCE, 28));
         buttons.add(getMutationButton(Mutation.STEALTH, Material.THIN_GLASS, 29));
         buttons.add(getMutationButton(Mutation.BOMBER, Material.TNT, 30));
+        buttons.add(getMutationButton(Mutation.CHEST, Material.ENDER_CHEST, 31));
 
         buttons.add(new Button(new ItemCreator(Material.WOOL)
                 .setData(14)

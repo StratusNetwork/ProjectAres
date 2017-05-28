@@ -217,10 +217,6 @@ public class MutationCommands implements NestedCommands {
             }
         }
     }
-
-<<<<<<< HEAD
-}
-=======
     public static MutationCommands getInstance() {
         return instance;
     }
@@ -230,4 +226,3 @@ public class MutationCommands implements NestedCommands {
     }
 
 }
->>>>>>> upstream/master

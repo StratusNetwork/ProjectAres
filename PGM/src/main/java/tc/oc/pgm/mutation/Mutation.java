@@ -10,6 +10,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.mutation.types.MutationModule;
+import tc.oc.pgm.mutation.types.kit.ChestMutation;
 import tc.oc.pgm.mutation.types.kit.ArmorMutation;
 import tc.oc.pgm.mutation.types.kit.ElytraMutation;
 import tc.oc.pgm.mutation.types.kit.EnchantmentMutation;
@@ -50,7 +51,8 @@ public enum Mutation {
     MOBS       (MobsMutation.class),
     LIGHTNING  (LightningMutation.class),
     BOMBER     (BomberMutation.class),
-    APOCALYPSE (ApocalypseMutation.class);
+    APOCALYPSE (ApocalypseMutation.class),
+    CHEST      (ChestMutation.class);
 
     public static final String TYPE_KEY = "mutation.type.";
     public static final String DESCRIPTION_KEY = ".desc";

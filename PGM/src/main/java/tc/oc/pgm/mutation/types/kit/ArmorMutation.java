@@ -59,7 +59,7 @@ public class ArmorMutation extends KitMutation {
         // Restore the player's old weapon
         ItemStack weapon = weapons.remove(player);
         //Check if player is not observing and if match is not ended
-        if((weapon != null) && !player.isObserving() && !match.inState(MatchState.Finished)) {
+        if((weapon != null) && !player.isObserving() && !match().inState(MatchState.Finished)) {
             ItemKitApplicator applicator = new ItemKitApplicator();
             applicator.add(weapon);
             applicator.apply(player);
