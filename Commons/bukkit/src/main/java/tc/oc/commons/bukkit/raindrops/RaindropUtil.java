@@ -157,7 +157,11 @@ public class RaindropUtil {
     private static BaseComponent raindropsMessage(int count, int multiplier, @Nullable BaseComponent reason) {
         Component message = new Component(ChatColor.GRAY);
         message.extra(new Component((count > 0 ? "+" : "") + count, ChatColor.GREEN, ChatColor.BOLD),
+<<<<<<< HEAD
                       new Component("" + (count == 1 || count == -1 ? configuration.singular() : configuration.plural()), ChatColor.AQUA));
+=======
+                new Component(" Droplet" + (count == 1 || count == -1 ? "" : "s"), ChatColor.AQUA));
+>>>>>>> upstream/master
         if(multiplier != 100) {
             message.extra(new Component(" | ", ChatColor.DARK_PURPLE),
                           new Component((multiplier / 100f) + "x", ChatColor.GOLD, ChatColor.ITALIC));
