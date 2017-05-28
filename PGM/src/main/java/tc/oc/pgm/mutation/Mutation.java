@@ -35,27 +35,6 @@ import java.util.stream.Stream;
 
 public enum Mutation {
 
-<<<<<<< HEAD
-    BLITZ      (BlitzMutation.class),
-    RAGE       (RageMutation.class),
-    HARDCORE   (HardcoreMutation.class),
-    JUMP       (JumpMutation.class),
-    EXPLOSIVE  (ExplosiveMutation.class),
-    ELYTRA     (ElytraMutation.class),
-    PROJECTILE (ProjectileMutation.class),
-    ENCHANTMENT(EnchantmentMutation.class),
-    POTION     (PotionMutation.class),
-    EQUESTRIAN (EquestrianMutation.class),
-    HEALTH     (HealthMutation.class),
-    GLOW       (GlowMutation.class),
-    STEALTH    (StealthMutation.class),
-    ARMOR      (ArmorMutation.class),
-    MOBS       (MobsMutation.class),
-    LIGHTNING  (LightningMutation.class),
-    BOMBER     (BomberMutation.class),
-    APOCALYPSE (ApocalypseMutation.class),
-    CHEST      (ChestMutation.class);
-=======
     BLITZ      (BlitzMutation.class,       Material.IRON_FENCE, false),
     RAGE       (RageMutation.class,        Material.SKULL_ITEM, false),
     HARDCORE   (HardcoreMutation.class,    Material.GOLDEN_APPLE),
@@ -74,7 +53,6 @@ public enum Mutation {
     LIGHTNING  (LightningMutation.class,   Material.JACK_O_LANTERN),
     BOMBER     (BomberMutation.class,      Material.TNT),
     APOCALYPSE (ApocalypseMutation.class,  Material.NETHER_STAR);
->>>>>>> upstream/master
 
     public static final String TYPE_KEY = "mutation.type.";
     public static final String DESCRIPTION_KEY = ".desc";

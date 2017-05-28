@@ -29,40 +29,9 @@ public class MutationTokenInterface extends SinglePageInterface {
     @Override
     public void setButtons() {
         List<Button> buttons = new ArrayList<>();
-<<<<<<< HEAD
-
-        buttons.add(getMutationButton(Mutation.EQUESTRIAN, Material.SADDLE, 10));
-        buttons.add(getMutationButton(Mutation.POTION, Material.POTION, 11));
-        buttons.add(getMutationButton(Mutation.ELYTRA, Material.ELYTRA, 12));
-        buttons.add(getMutationButton(Mutation.PROJECTILE, Material.TIPPED_ARROW, 13));
-        buttons.add(getMutationButton(Mutation.MOBS, Material.MONSTER_EGG, 14));
-        buttons.add(getMutationButton(Mutation.HARDCORE, Material.GOLDEN_APPLE, 15));
-        buttons.add(getMutationButton(Mutation.GLOW, Material.GLOWSTONE_DUST, 16));
-
-        buttons.add(getMutationButton(Mutation.ENCHANTMENT, Material.ENCHANTMENT_TABLE, 19));
-        buttons.add(getMutationButton(Mutation.JUMP, Material.FEATHER, 20));
-        buttons.add(getMutationButton(Mutation.EXPLOSIVE, Material.FLINT_AND_STEEL, 21));
-        buttons.add(getMutationButton(Mutation.HEALTH, Material.COOKED_BEEF, 22));
-        buttons.add(getMutationButton(Mutation.ARMOR, Material.DIAMOND_CHESTPLATE, 23));
-        buttons.add(getMutationButton(Mutation.LIGHTNING, Material.JACK_O_LANTERN, 24));
-        buttons.add(getMutationButton(Mutation.APOCALYPSE, Material.NETHER_STAR, 25));
-
-        buttons.add(getMutationButton(Mutation.BLITZ, Material.IRON_FENCE, 28));
-        buttons.add(getMutationButton(Mutation.STEALTH, Material.THIN_GLASS, 29));
-        buttons.add(getMutationButton(Mutation.BOMBER, Material.TNT, 30));
-        buttons.add(getMutationButton(Mutation.CHEST, Material.ENDER_CHEST, 31));
-
-        buttons.add(new Button(new ItemCreator(Material.WOOL)
-                .setData(14)
-                .setName( ChatColor.GREEN + "Go Back" ), 49){
-            @Override
-            public void function(Player player) {
-                player.openInventory(new MainTokenMenu(player).getInventory());
-=======
         for (Mutation mutation : Mutation.values()) {
             if (mutation.isPollable()) {
                 buttons.add(getMutationButton(mutation));
->>>>>>> upstream/master
             }
         }
         setButtons(buttons);
@@ -120,11 +89,11 @@ public class MutationTokenInterface extends SinglePageInterface {
         defaultButtons.add(this.lastPageButton);
         this.lastPageButton.setSlot(49);
         this.lastPageButton.setIcon(new ItemCreator(Material.WOOL)
-                                        .setData(14)
-                                        .setName(ChatColor.GREEN + "Go Back"));
+                .setData(14)
+                .setName(ChatColor.GREEN + "Go Back"));
         for (Integer integer : new Integer[]{
-                 0,  1,  2,  3,  4,  5,  6,  7,  8,
-                 9,                             17,
+                0,  1,  2,  3,  4,  5,  6,  7,  8,
+                9,                             17,
                 18,                             26,
                 27,                             35,
                 36,                             44,
