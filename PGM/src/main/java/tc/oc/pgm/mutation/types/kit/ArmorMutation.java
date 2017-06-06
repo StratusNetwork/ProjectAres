@@ -10,6 +10,7 @@ import tc.oc.pgm.kits.ItemKitApplicator;
 import tc.oc.pgm.kits.SlotItemKit;
 import tc.oc.pgm.match.Match;
 import tc.oc.pgm.match.MatchPlayer;
+import tc.oc.pgm.match.MatchState;
 import tc.oc.pgm.mutation.types.KitMutation;
 
 import java.util.List;
@@ -57,7 +58,8 @@ public class ArmorMutation extends KitMutation {
         super.remove(player);
         // Restore the player's old weapon
         ItemStack weapon = weapons.remove(player);
-        if(weapon != null) {
+        //Check if player is not observing and if match is not ended
+        if((weapon != null) && !player.isObserving() && !match().inState(MatchState.Finished)) {
             ItemKitApplicator applicator = new ItemKitApplicator();
             applicator.add(weapon);
             applicator.apply(player);

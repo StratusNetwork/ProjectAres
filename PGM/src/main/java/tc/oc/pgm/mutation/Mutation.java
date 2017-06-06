@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.mutation.types.MutationModule;
+import tc.oc.pgm.mutation.types.kit.ChestMutation;
 import tc.oc.pgm.mutation.types.kit.ArmorMutation;
 import tc.oc.pgm.mutation.types.kit.ElytraMutation;
 import tc.oc.pgm.mutation.types.kit.EnchantmentMutation;

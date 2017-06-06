@@ -89,11 +89,11 @@ public class MutationTokenInterface extends SinglePageInterface {
         defaultButtons.add(this.lastPageButton);
         this.lastPageButton.setSlot(49);
         this.lastPageButton.setIcon(new ItemCreator(Material.WOOL)
-                                        .setData(14)
-                                        .setName(ChatColor.GREEN + "Go Back"));
+                .setData(14)
+                .setName(ChatColor.GREEN + "Go Back"));
         for (Integer integer : new Integer[]{
-                 0,  1,  2,  3,  4,  5,  6,  7,  8,
-                 9,                             17,
+                0,  1,  2,  3,  4,  5,  6,  7,  8,
+                9,                             17,
                 18,                             26,
                 27,                             35,
                 36,                             44,

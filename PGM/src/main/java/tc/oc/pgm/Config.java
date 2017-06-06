@@ -164,4 +164,9 @@ public class Config {
             return getConfiguration().getBoolean("mutations.enabled", true);
         }
     }
+
+    public static class MatchInfo {
+        public static boolean linkEnabled() { return getConfiguration().getBoolean("match-info.link-enabled", false);
+        }
+    }
 }
