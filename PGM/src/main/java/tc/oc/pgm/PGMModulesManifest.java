@@ -24,6 +24,7 @@ import tc.oc.pgm.playerstats.StatsManifest;
 import tc.oc.pgm.raindrops.RaindropManifest;
 import tc.oc.pgm.regions.RegionManifest;
 import tc.oc.pgm.scoreboard.ScoreboardManifest;
+import tc.oc.pgm.shop.ShopManifest;
 import tc.oc.pgm.structure.StructureManifest;
 import tc.oc.pgm.teams.TeamManifest;
 import tc.oc.pgm.terrain.TerrainManifest;
@@ -72,5 +73,6 @@ public class PGMModulesManifest extends HybridManifest {
         install(new BlitzManifest());
         install(new HighlightManifest());
         install(new MenuManifest());
+        install(new ShopManifest());
     }
 }
