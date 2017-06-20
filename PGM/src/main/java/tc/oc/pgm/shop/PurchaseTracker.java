@@ -21,7 +21,9 @@ public interface PurchaseTracker extends Listener {
      * @param player who initiated the strategy.
      * @param purchasable that the strategy is working towards.
      */
-    void startIndividualStrategy(MatchPlayer player, Purchasable purchasable);
+    default void startIndividualStrategy(MatchPlayer player, Purchasable purchasable) {
+        startIndividualStrategy(player, purchasable, defaultFilter(purchasable));
+    }
 
     /**
      * Start a strategy for a party.
@@ -29,14 +31,18 @@ public interface PurchaseTracker extends Listener {
      * @param player who initiated the strategy.
      * @param purchasable that the strategy is working towards.
      */
-    void startPartyStrategy(Party party, MatchPlayer player, Purchasable purchasable);
+    default void startPartyStrategy(Party party, MatchPlayer player, Purchasable purchasable) {
+        startPartyStrategy(party, player, purchasable, defaultFilter(purchasable));
+    }
 
     /**
      * Start a strategy that anyone in the {@link tc.oc.pgm.match.Match} can contribute to.
      * @param player who initiated the strategy.
      * @param purchasable that the strategy is working towards.
      */
-    void startGlobalStrategy(Purchasable purchasable, MatchPlayer player);
+    default void startGlobalStrategy(Purchasable purchasable, MatchPlayer player) {
+        startGlobalStrategy(purchasable, player, defaultFilter(purchasable));
+    }
 
     /**
      * {@link #startIndividualStrategy(MatchPlayer, Purchasable)} with a contribution filter.
@@ -87,6 +93,12 @@ public interface PurchaseTracker extends Listener {
      * @param user that should be loaded
      */
     List<PlayerPaymentStrategy> loadFromAPI(User user);
+
+    /**
+     * Helper method used to derive the default filter that should be used if none is supplied.
+     * @param purchasable to define the filter for
+     */
+    Filter defaultFilter(Purchasable purchasable);
 
     /**
      * Save any ongoing strategies to the API, while removing all old strategies for the map.

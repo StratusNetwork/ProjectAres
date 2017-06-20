@@ -41,18 +41,8 @@ class SimplePurchaseTracker implements PurchaseTracker {
     }
 
     @Override
-    public void startIndividualStrategy(MatchPlayer player, Purchasable purchasable) {
-        startIndividualStrategy(player, purchasable, purchasable.getPurchaseFilter());
-    }
-
-    @Override
-    public void startPartyStrategy(Party party, MatchPlayer player, Purchasable purchasable) {
-        startPartyStrategy(party, player, purchasable, purchasable.getPurchaseFilter());
-    }
-
-    @Override
-    public void startGlobalStrategy(Purchasable purchasable, MatchPlayer player) {
-        startGlobalStrategy(purchasable, player, purchasable.getPurchaseFilter());
+    public Filter defaultFilter(Purchasable purchasable) {
+        return purchasable.getPurchaseFilter();
     }
 
     @Override
