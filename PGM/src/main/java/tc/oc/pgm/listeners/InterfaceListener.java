@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventBus;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import tc.oc.commons.bukkit.event.InterfaceOpenEvent;
 import tc.oc.commons.bukkit.gui.Interface;
@@ -58,6 +59,14 @@ public class InterfaceListener implements Listener, PluginFacet {
                     player.updateInventory();
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Interface gui = InterfaceManager.getInterface(event.getInventory().getHolder());
+        if (gui != null) {
+            gui.onClose();
         }
     }
 

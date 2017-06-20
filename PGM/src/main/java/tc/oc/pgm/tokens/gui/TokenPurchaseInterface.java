@@ -35,6 +35,8 @@ public class TokenPurchaseInterface extends ChestInterface {
         return instance;
     }
 
+
+
     @Override
     public void updateButtons() {
         List<Button> buttons = new ArrayList<>();

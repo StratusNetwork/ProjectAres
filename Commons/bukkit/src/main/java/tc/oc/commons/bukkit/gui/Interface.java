@@ -72,4 +72,7 @@ public class Interface {
         return null;
     }
 
+    public void onClose() {
+
+    }
 }

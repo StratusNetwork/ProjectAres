@@ -56,6 +56,7 @@ public class InventoryUtils {
         Stream.<S>concat(similar(inv, slotList.stream(), remaining), empty(inv, slotList.stream())).forEach(slot -> {
             if(!ItemUtils.isNothing(remaining)) {
                 final int transferAmount = slot.maxTransferrableIn(remaining, inv);
+                System.out.println(transferAmount);
                 if(transferAmount > 0) {
                     final ItemStack transferStack = remaining.clone();
                     remaining.setAmount(remaining.getAmount() - transferAmount);

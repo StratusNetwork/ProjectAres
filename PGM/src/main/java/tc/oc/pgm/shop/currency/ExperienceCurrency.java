@@ -1,9 +1,12 @@
 package tc.oc.pgm.shop.currency;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import tc.oc.pgm.features.FeatureDefinition;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.shop.purchasable.Purchasable;
 
-public class ExperienceCurrency implements Currency {
+public class ExperienceCurrency extends FeatureDefinition.Impl implements Currency {
 
     @Override
     public double getValue() {
@@ -11,8 +14,23 @@ public class ExperienceCurrency implements Currency {
     }
 
     @Override
+    public BaseComponent getSingularName() {
+        return new TextComponent("XP Level");
+    }
+
+    @Override
+    public BaseComponent getPluralizedName() {
+        return new TextComponent("XP Levels");
+    }
+
+    @Override
     public boolean canPurchase(Purchasable purchasable, MatchPlayer player) {
-        return player.getBukkit().getLevel() >= purchasable.getCost();
+        return hasCurrency(player) && player.getBukkit().getLevel() >= purchasable.getCost();
+    }
+
+    @Override
+    public boolean hasCurrency(MatchPlayer player) {
+        return player.getBukkit().getLevel() >- 1;
     }
 
     @Override

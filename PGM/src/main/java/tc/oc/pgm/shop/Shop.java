@@ -4,7 +4,8 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import tc.oc.pgm.features.FeatureDefinition;
 import tc.oc.pgm.features.FeatureInfo;
 import tc.oc.pgm.filters.Filter;
-import tc.oc.pgm.shop.purchasable.Purchasable;
+import tc.oc.pgm.match.MatchPlayer;
+import tc.oc.pgm.shop.purchasable.PurchasableSet;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -12,48 +13,42 @@ import java.util.Set;
 @FeatureInfo(name = "shop", plural = "shops")
 public abstract class Shop extends FeatureDefinition.Impl {
 
-    public enum Type {
-        BLOCK,
-        ENTITY
-    }
-
-    @Inspect final Type type;
-    @Inspect final Set<Purchasable> items;
-    @Inspect final TranslatableComponent title;
+    @Inspect final PurchaseTracker tracker;
+    @Inspect final Set<PurchasableSet> items;
+    @Inspect final String title;
+    @Inspect final int rows;
     @Inspect final @Nullable Filter openFilter;
-    @Inspect final @Nullable Filter globalPurchaseFilter;
+    @Inspect final @Nullable String openFailMessage;
     @Inspect final @Nullable boolean multiUse;
     @Inspect boolean inUse;
 
-    public Shop(Type type, Set<Purchasable> items, TranslatableComponent title, Filter openFilter, Filter globalPurchaseFilter, boolean multiUse) {
-        this.type = type;
+    public Shop(PurchaseTracker tracker,
+                Set<PurchasableSet> items,
+                String title,
+                int rows,
+                Filter openFilter,
+                String openFailMessage,
+                boolean multiUse) {
+        this.tracker = tracker;
         this.items = items;
         this.title = title;
+        this.rows = rows;
         this.openFilter = openFilter;
-        this.globalPurchaseFilter = globalPurchaseFilter;
+        this.openFailMessage = openFailMessage;
         this.multiUse = multiUse;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public Set<Purchasable> getItems() {
+    public Set<PurchasableSet> getItems() {
         return items;
     }
 
-    public TranslatableComponent getTitle() {
+    public String getTitle() {
         return title;
     }
 
     @Nullable
     public Filter getOpenFilter() {
         return openFilter;
-    }
-
-    @Nullable
-    public Filter getGlobalPurchaseFilter() {
-        return globalPurchaseFilter;
     }
 
     @Nullable
@@ -67,5 +62,21 @@ public abstract class Shop extends FeatureDefinition.Impl {
 
     public void setInUse(boolean inUse) {
         this.inUse = inUse;
+    }
+
+    protected void handleOpen(MatchPlayer player) {
+        if (isInUse() && !isMultiUse())
+            player.sendWarning(new TranslatableComponent("shop.inUse"));
+
+        if (getOpenFilter() != null) {
+            if (getOpenFilter().denies(player)) {
+                if (openFailMessage != null)
+                    player.sendWarning(openFailMessage);
+                return;
+            }
+        }
+
+        setInUse(true);
+        player.getBukkit().openInventory(new ShopInterface(player, this).getInventory());
     }
 }

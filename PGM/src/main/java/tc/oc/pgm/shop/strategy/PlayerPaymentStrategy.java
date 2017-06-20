@@ -5,12 +5,12 @@ import tc.oc.pgm.match.Competitor;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.shop.purchasable.Purchasable;
 
-public class PlayerPaymentStrategy extends PaymentStrategy.Impl {
+public class PlayerPaymentStrategy extends PaymentStrategyImpl<MatchPlayer> {
     final MatchPlayer player;
     final boolean crossTeam;
     final boolean persistent;
 
-    // Data about player when the strategy was started.
+    // Data about player when the strategy was (re)started.
     final Competitor competitor;
     boolean hasLeft;
 
@@ -31,5 +31,10 @@ public class PlayerPaymentStrategy extends PaymentStrategy.Impl {
         if (!crossTeam)
             return competitor.getPlayers().contains(player);
         return persistent || !hasLeft;
+    }
+
+    @Override
+    public MatchPlayer getOwner() {
+        return this.player;
     }
 }

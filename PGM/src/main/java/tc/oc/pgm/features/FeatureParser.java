@@ -186,7 +186,7 @@ public class FeatureParser<T extends FeatureDefinition> extends PrimitiveParser<
      * Try to parse an ID applied to the given definition element,
      * or return empty if the definition is anonymous.
      */
-    public Optional<String> parseDefinitionId(Element el, T definition) throws InvalidXMLException {
+    public Optional<String>     parseDefinitionId(Element el, T definition) throws InvalidXMLException {
         return Node.tryAttr(el, idAttributeName())
                    .map(Node::getValue);
     }
