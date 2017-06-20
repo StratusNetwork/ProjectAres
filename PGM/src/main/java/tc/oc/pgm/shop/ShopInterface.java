@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * GUI that is created from the items in a {@link Shop} that can be interacted with.
+ */
 public class ShopInterface extends ChestInterface {
     private static ShopInterface instance;
 
@@ -62,6 +65,11 @@ public class ShopInterface extends ChestInterface {
         updateInventory();
     }
 
+    /**
+     * Create a {@link Button} from a {@link Purchasable}.
+     * @param purchasable to create the button from
+     * @param player that the button is being displayed to
+     */
     private Button createPurchaseButton(Purchasable purchasable, final MatchPlayer player) {
         Optional<PaymentStrategy> strategy = Optional.empty();
         switch (purchasable.getType()) {

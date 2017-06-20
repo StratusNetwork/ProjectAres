@@ -9,6 +9,9 @@ import tc.oc.pgm.shop.purchasable.Purchasable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * A currency based on a {@link Material}.
+ */
 public class MaterialCurrency extends FeatureDefinition.Impl implements Currency {
 
     private final Material material;

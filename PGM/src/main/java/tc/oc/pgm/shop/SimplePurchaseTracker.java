@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Simple implementation of the {@link PurchaseTracker}.
+ */
 class SimplePurchaseTracker implements PurchaseTracker {
     private final Map<MatchPlayer, PaymentStrategy> individualStrategies;
     private final Map<Party, PaymentStrategy> partyStrategies;

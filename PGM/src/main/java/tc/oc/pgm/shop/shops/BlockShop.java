@@ -16,6 +16,9 @@ import tc.oc.pgm.shop.purchasable.PurchasableSet;
 
 import java.util.Set;
 
+/**
+ * Represents a shop activated by right clicking on a {@link org.bukkit.block.Block}.
+ */
 @ListenerScope(MatchScope.RUNNING)
 public class BlockShop extends Shop implements Listener {
     final Vector location;

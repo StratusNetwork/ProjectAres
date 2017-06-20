@@ -4,6 +4,9 @@ import tc.oc.pgm.features.FeatureDefinition;
 
 import java.util.Set;
 
+/**
+ * Represents a group of {@link Purchasable}s which are loaded into {@link tc.oc.pgm.shop.Shop}s together.
+ */
 public interface PurchasableSet extends FeatureDefinition {
     Set<Purchasable> getItems();
 

@@ -7,18 +7,63 @@ import tc.oc.pgm.shop.currency.Currency;
 
 import java.util.Set;
 
+/**
+ * Represents anything that can be purchased with {@link Currency}.
+ */
 public interface Purchasable {
+    /**
+     * Get the icon that should be used for UI display.
+     */
     ItemCreator getIcon();
+
+    /**
+     * Get the slot that this item should be placed in inside of a {@link tc.oc.pgm.shop.ShopInterface}.
+     */
     int getSlot();
+
+    /**
+     * Get the type of {@link tc.oc.pgm.shop.strategy.PaymentStrategy} that should be used for this item.
+     */
     Type getType();
+
+    /**
+     * Get the cost of this item after currency conversion.
+     */
     double getCost();
+
+    /**
+     * Get the currency that can be used to purchase this item.
+     */
     Currency getCurrency();
+
+    /**
+     * Determine if {@link Currency} can be put toward this item in stages.
+     */
     boolean isIncremental();
+
+    /**
+     * Get the filter that will be checked against the {@link MatchPlayer} before they are allowed to purchase this item.
+     */
     Filter getPurchaseFilter();
+
+    /**
+     * Reward a set of players after a successful purchase.
+     */
     void reward(Set<MatchPlayer> players);
 
     enum Type {
-        GLOBAL, PARTY, INDIVIDUAL
+        /**
+         * Anyone in the {@link tc.oc.pgm.match.Match} can contribute to the eventual purchase of this item.
+         */
+        GLOBAL,
+        /**
+         * Anyone in the {@link tc.oc.pgm.match.Party} can contribute to the eventual purchase of this item.
+         */
+        PARTY,
+        /**
+         * Only the initiating {@link MatchPlayer} can contribute to the purchase of this item.
+         */
+        INDIVIDUAL
     }
 }
 

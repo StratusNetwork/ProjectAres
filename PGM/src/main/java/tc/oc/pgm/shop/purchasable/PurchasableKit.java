@@ -8,6 +8,9 @@ import tc.oc.pgm.shop.currency.Currency;
 
 import java.util.Set;
 
+/**
+ * Represents a {@link Kit} that can be purchased.
+ */
 public class PurchasableKit extends PurchasableImpl {
     final Kit kit;
 

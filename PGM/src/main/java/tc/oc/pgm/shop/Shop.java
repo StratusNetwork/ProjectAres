@@ -10,6 +10,9 @@ import tc.oc.pgm.shop.purchasable.PurchasableSet;
 import javax.annotation.Nullable;
 import java.util.Set;
 
+/**
+ * A container for {@link PurchasableSet}s where they can be purchased.
+ */
 @FeatureInfo(name = "shop", plural = "shops")
 public abstract class Shop extends FeatureDefinition.Impl {
 

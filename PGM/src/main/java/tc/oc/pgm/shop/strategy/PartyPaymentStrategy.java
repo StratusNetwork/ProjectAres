@@ -5,6 +5,9 @@ import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.match.Party;
 import tc.oc.pgm.shop.purchasable.Purchasable;
 
+/**
+ * Strategy which allows all players in a {@link Party} to contribute.
+ */
 public class PartyPaymentStrategy extends PaymentStrategyImpl<Party> {
     final Party party;
 

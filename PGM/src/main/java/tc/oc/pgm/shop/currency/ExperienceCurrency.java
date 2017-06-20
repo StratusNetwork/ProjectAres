@@ -6,6 +6,9 @@ import tc.oc.pgm.features.FeatureDefinition;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.shop.purchasable.Purchasable;
 
+/**
+ * A currency based on a {@link org.bukkit.entity.Player}'s XP level.
+ */
 public class ExperienceCurrency extends FeatureDefinition.Impl implements Currency {
 
     @Override
