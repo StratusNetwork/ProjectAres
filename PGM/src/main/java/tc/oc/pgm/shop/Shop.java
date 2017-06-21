@@ -25,7 +25,10 @@ public abstract class Shop extends FeatureDefinition.Impl {
     @Inspect final @Nullable boolean multiUse;
     @Inspect boolean inUse;
 
+    final ShopInterface.Factory interfaceFactory;
+
     public Shop(PurchaseTracker tracker,
+                ShopInterface.Factory interfaceFactory,
                 Set<PurchasableSet> items,
                 String title,
                 int rows,
@@ -33,6 +36,7 @@ public abstract class Shop extends FeatureDefinition.Impl {
                 String openFailMessage,
                 boolean multiUse) {
         this.tracker = tracker;
+        this.interfaceFactory = interfaceFactory;
         this.items = items;
         this.title = title;
         this.rows = rows;
@@ -80,6 +84,6 @@ public abstract class Shop extends FeatureDefinition.Impl {
         }
 
         setInUse(true);
-        player.getBukkit().openInventory(new ShopInterface(player, this).getInventory());
+        interfaceFactory.create(player, this).openWindow(player.getBukkit());
     }
 }

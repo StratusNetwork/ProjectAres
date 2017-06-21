@@ -1231,6 +1231,28 @@ public class XMLUtils {
         throw new InvalidXMLException(value + " is not a player slot", node);
     }
 
+    public static Slot.Container parseContainerSlot(Node node) throws InvalidXMLException {
+        String value = node.getValue();
+        Slot slot;
+        try {
+            slot = Slot.Container.forIndex(Integer.parseInt(value));
+            if(slot == null) {
+                throw new InvalidXMLException("Invalid inventory slot index", node);
+            }
+        } catch(NumberFormatException e) {
+            slot = Slot.forKey(value);
+            if(slot == null) {
+                throw new InvalidXMLException("Invalid inventory slot name", node);
+            }
+        }
+
+        if(slot instanceof Slot.Container) {
+            return (Slot.Container) slot;
+        }
+
+        throw new InvalidXMLException(value + " is not a player slot", node);
+    }
+
     public static EquipmentSlot parseEquipmentSlot(Node node, EquipmentSlot def) throws InvalidXMLException {
         return node == null ? def : parseEquipmentSlot(node);
     }

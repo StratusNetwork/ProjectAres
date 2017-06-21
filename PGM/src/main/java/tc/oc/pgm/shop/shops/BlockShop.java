@@ -1,5 +1,6 @@
 package tc.oc.pgm.shop.shops;
 
+import com.google.inject.assistedinject.Assisted;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,8 +13,10 @@ import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.match.MatchScope;
 import tc.oc.pgm.shop.PurchaseTracker;
 import tc.oc.pgm.shop.Shop;
+import tc.oc.pgm.shop.ShopInterface;
 import tc.oc.pgm.shop.purchasable.PurchasableSet;
 
+import javax.inject.Inject;
 import java.util.Set;
 
 /**
@@ -22,19 +25,30 @@ import java.util.Set;
 @ListenerScope(MatchScope.RUNNING)
 public class BlockShop extends Shop implements Listener {
     final Vector location;
-
     Match match;
 
-    public BlockShop(PurchaseTracker tracker,
-                     Set<PurchasableSet> items,
-                     String title,
-                     int rows,
-                     Filter openFilter,
-                     String openFailMessage,
-                     boolean multiUse,
-                     Vector location) {
-        super(tracker, items, title, rows, openFilter, openFailMessage, multiUse);
+    @Inject public BlockShop(@Assisted PurchaseTracker tracker,
+                     ShopInterface.Factory interfaceFactory,
+                     @Assisted Set<PurchasableSet> items,
+                     @Assisted("title") String title,
+                     @Assisted int rows,
+                     @Assisted Filter openFilter,
+                     @Assisted("openFailMessage") String openFailMessage,
+                     @Assisted boolean multiUse,
+                     @Assisted Vector location) {
+        super(tracker, interfaceFactory, items, title, rows, openFilter, openFailMessage, multiUse);
         this.location = location;
+    }
+
+    public interface Factory {
+        BlockShop create(PurchaseTracker tracker,
+                    Set<PurchasableSet> items,
+                    @Assisted("title") String title,
+                    int rows,
+                    Filter openFilter,
+                    @Assisted("openFailMessage") String openFailMessage,
+                    boolean multiUse,
+                    Vector location);
     }
 
     @Override

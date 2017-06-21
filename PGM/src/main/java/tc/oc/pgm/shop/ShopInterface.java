@@ -1,162 +1,216 @@
 package tc.oc.pgm.shop;
 
+import com.google.api.client.util.Maps;
+import com.google.inject.assistedinject.Assisted;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import tc.oc.commons.bukkit.gui.Interface;
-import tc.oc.commons.bukkit.gui.buttons.Button;
-import tc.oc.commons.bukkit.gui.interfaces.ChestInterface;
-import tc.oc.commons.bukkit.util.ItemCreator;
-import tc.oc.pgm.PGMTranslations;
+import org.bukkit.event.Event;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
+import tc.oc.commons.bukkit.chat.ComponentRenderContext;
+import tc.oc.commons.bukkit.inventory.Slot;
+import tc.oc.commons.bukkit.item.RenderedItemBuilder;
+import tc.oc.commons.bukkit.listeners.ButtonListener;
+import tc.oc.commons.bukkit.listeners.ButtonManager;
+import tc.oc.commons.bukkit.listeners.WindowListener;
+import tc.oc.commons.bukkit.listeners.WindowManager;
+import tc.oc.commons.core.chat.Component;
+import tc.oc.pgm.match.Competitor;
 import tc.oc.pgm.match.Match;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.shop.purchasable.Purchasable;
-import tc.oc.pgm.shop.purchasable.PurchasableSet;
 import tc.oc.pgm.shop.strategy.PaymentStrategy;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * GUI that is created from the items in a {@link Shop} that can be interacted with.
- */
-public class ShopInterface extends ChestInterface {
-    private static ShopInterface instance;
-
+* GUI that is created from the items in a {@link Shop} that can be interacted with.
+*/
+public class ShopInterface {
     final MatchPlayer player;
     final Shop shop;
-    final PurchaseTracker tracker;
+    private final ButtonManager buttonManager;
+    private final WindowManager windowManager;
+    private final RenderedItemBuilder.Factory itemBuilders;
+    private final ComponentRenderContext renderer;    final PurchaseTracker tracker;
     final Match match;
 
-    public ShopInterface(MatchPlayer player, Shop shop) {
-        super(player.getBukkit(), new ArrayList<>(), shop.rows * 9, shop.getTitle(), getInstance());
+    private Map<Slot, ShopInterface.Button> buttons = Maps.newHashMap();
+
+    @Inject public ShopInterface(@Assisted MatchPlayer player,
+                                 @Assisted Shop shop,
+                                 ButtonManager buttonManager,
+                                 RenderedItemBuilder.Factory itemBuilders,
+                                 WindowManager windowManager,
+                                 ComponentRenderContext renderer) {
         this.player = player;
         this.shop = shop;
+        this.buttonManager = buttonManager;
+        this.itemBuilders = itemBuilders;
+        this.windowManager = windowManager;
+        this.renderer = renderer;
         this.tracker = shop.tracker;
         this.match = player.getMatch();
-        updateButtons();
+        shop.getItems().forEach(set -> set.getItems().forEach(i -> buttons.put(i.getSlot(), new Button(i))));
     }
 
-    public static ShopInterface getInstance() {
-        return instance;
+    public interface Factory {
+        ShopInterface create(MatchPlayer player, Shop shop);
     }
 
-    @Override
-    public Interface getParent() {
-        return getInstance();
-    }
-
-    @Override
-    public void onClose() {
-        shop.setInUse(false);
-    }
-
-    @Override
-    public void updateButtons() {
-        List<Button> buttons = new ArrayList<>();
-        for (PurchasableSet set : shop.getItems()) {
-            for (Purchasable purchasable : set.getItems()) {
-                buttons.add(createPurchaseButton(purchasable, player));
-            }
+    private final WindowListener windowListener = new WindowListener() {
+        @Override public void windowOpened(InventoryView window) {
+            shop.setInUse(true);
         }
-        setButtons(buttons);
-        updateInventory();
+
+        @Override public void windowClosed(InventoryView window) {
+            shop.setInUse(false);
+        }
+
+        @Override
+        public boolean windowClicked(InventoryView window, Inventory inventory, ClickType clickType, InventoryType.SlotType slotType, int slotIndex, @Nullable ItemStack item) {
+            return true;
+        }
+    };
+
+    private Inventory createWindow(Player player) {
+        final Inventory inventory = Bukkit.createInventory(
+                player,
+                shop.rows * 9,
+                renderer.renderLegacy(new Component(shop.getTitle(), ChatColor.DARK_GREEN, ChatColor.BOLD), player)
+        );
+        buttons.values().forEach(handler -> handler.updateWindow(inventory));
+        return inventory;
     }
 
-    /**
-     * Create a {@link Button} from a {@link Purchasable}.
-     * @param purchasable to create the button from
-     * @param player that the button is being displayed to
-     */
-    private Button createPurchaseButton(Purchasable purchasable, final MatchPlayer player) {
-        Optional<PaymentStrategy> strategy = Optional.empty();
-        switch (purchasable.getType()) {
-            case PARTY:
-                strategy = tracker.getOngoingStrategy(player.getParty(), purchasable);
-                break;
-            case INDIVIDUAL:
-                strategy = tracker.getOngoingStrategy(player, purchasable);
-                break;
-            case GLOBAL:
-                strategy = tracker.getOngoingStrategy(purchasable);
-                break;
+    public void openWindow(Player player) {
+        if(!buttons.isEmpty()) {
+            windowManager.openWindow(windowListener, player, createWindow(player));
         }
-        ItemCreator creator = purchasable.getIcon();
-        creator.clearLore();
-        if (strategy.isPresent()) {
-            int cost = (int) Math.round(strategy.get().getRemainingOwed() / purchasable.getCurrency().getValue());
-            int payed = (int) Math.round(strategy.get().getContribution() / purchasable.getCurrency().getValue());
-            BaseComponent currencyName = cost == 1 ? purchasable.getCurrency().getSingularName() : purchasable.getCurrency().getPluralizedName();
-            creator.addLore(
-                    PGMTranslations.get().t(
-                            ChatColor.AQUA.toString(),
-                            "shop.purchase.ongoing",
-                            player.getBukkit(),
-                            cost,
-                            currencyName,
-                            payed
-                    ));
-        } else {
-            int cost = (int) Math.round(purchasable.getCost() / purchasable.getCurrency().getValue());
-            BaseComponent currencyName = cost == 1 ? purchasable.getCurrency().getSingularName() : purchasable.getCurrency().getPluralizedName();
-            creator.addLore(
-                    PGMTranslations.get().t(ChatColor.AQUA.toString(), "shop.purchase.cost", player.getBukkit()) +
-                            ChatColor.GRAY + ": " +
-                            PGMTranslations.get().t(ChatColor.AQUA.toString(), "shop.purchase.new", player.getBukkit(), cost, currencyName)
-            );
+    }
+
+    private class Button implements ButtonListener {
+        final Purchasable purchasable;
+
+        public Button(Purchasable purchasable) {
+            this.purchasable = purchasable;
         }
-        if (purchasable.isIncremental()) {
-            String translationKey = "";
+
+        Optional<PaymentStrategy> getStrategy() {
+            Optional<PaymentStrategy> strategy = Optional.empty();
             switch (purchasable.getType()) {
-                case GLOBAL:
-                    translationKey = "shop.purchasable.category.global";
+                case COMPETITOR:
+                    strategy = tracker.getOngoingStrategy((Competitor) player.getParty(), purchasable);
                     break;
                 case INDIVIDUAL:
-                    translationKey = "shop.purchasable.category.individual";
+                    strategy = tracker.getOngoingStrategy(player, purchasable);
                     break;
-                case PARTY:
-                    translationKey = "shop.purchasable.category.team";
+                case GLOBAL:
+                    strategy = tracker.getOngoingStrategy(purchasable);
+                    break;
             }
-            creator.addLore(PGMTranslations.get().t(ChatColor.BLUE.toString(), translationKey, player.getBukkit()));
+            return strategy;
         }
-        Optional<PaymentStrategy> finalStrat = strategy;
-        return new Button(creator, purchasable.getSlot()){
-            @Override
-            public void function(Player player1) {
-                if (finalStrat.isPresent()) {
-                    if (finalStrat.get().getContributionFilter().denies(player)) {
-                        player.sendWarning(new TranslatableComponent("shop.contribute.fail"), true);
-                        return;
-                    }
-                    tracker.contribute(finalStrat.get(), player);
-                } else {
-                    if (purchasable.getPurchaseFilter().denies(player)) {
-                        player.sendWarning(new TranslatableComponent("shop.purchase.fail"), true);
-                        return;
-                    }
 
-                    if (!purchasable.getCurrency().hasCurrency(player) || (!purchasable.getCurrency().canPurchase(purchasable, player) && !purchasable.isIncremental())) {
-                        player.sendWarning(PGMTranslations.t("shop.purchase.failPoor", player), true);
-                        return;
-                    }
+        ItemStack createButton() {
+            if (player.isObserving())
+                throw new UnsupportedOperationException("Tried to create button for observer.");
 
-                    switch (purchasable.getType()) {
-                        case PARTY:
-                            tracker.startPartyStrategy(player.getParty(), player, purchasable);
-                            break;
-                        case INDIVIDUAL:
-                            tracker.startIndividualStrategy(player, purchasable);
-                            break;
-                        case GLOBAL:
-                            tracker.startGlobalStrategy(purchasable, player);
-                    }
-                }
-                getButtons().remove(this);
-                getButtons().add(createPurchaseButton(purchasable, player));
-                updateInventory();
+            RenderedItemBuilder itemBuilder = itemBuilders.create(player.getBukkit());
+            itemBuilder.material(purchasable.getIcon());
+            Optional<PaymentStrategy> strategy = getStrategy();
+            if (strategy.isPresent()) {
+                int cost = (int) Math.round(strategy.get().getRemainingOwed() / purchasable.getCurrency().getValue());
+                int payed = (int) Math.round(strategy.get().getContribution() / purchasable.getCurrency().getValue());
+                BaseComponent currencyName = cost == 1 ? purchasable.getCurrency().getSingularName() : purchasable.getCurrency().getPluralizedName();
+                currencyName.setColor(ChatColor.AQUA);
+                itemBuilder.lore(
+                        new TranslatableComponent(
+                                ChatColor.AQUA.toString() +
+                                        "shop.purchase.ongoing",
+                                player.getBukkit(),
+                                cost,
+                                currencyName,
+                                payed
+                        ));
+            } else {
+                int cost = (int) Math.round(purchasable.getCost() / purchasable.getCurrency().getValue());
+                BaseComponent currencyName = cost == 1 ? purchasable.getCurrency().getSingularName() : purchasable.getCurrency().getPluralizedName();
+                currencyName.setColor(ChatColor.AQUA);
+                itemBuilder.lore(
+                        new TextComponent(new TextComponent(ChatColor.GOLD.toString()), new TranslatableComponent("shop.purchase.cost"),
+                                new TextComponent(ChatColor.DARK_GRAY.toString()), new TextComponent(": "),
+                                new TextComponent(ChatColor.GREEN.toString()), new TranslatableComponent("shop.purchase.new", cost, currencyName)
+                        )
+                );
             }
-        };
+            if (purchasable.isIncremental()) {
+                String translationKey = "";
+                switch (purchasable.getType()) {
+                    case GLOBAL:
+                        translationKey = "shop.purchasable.category.global";
+                        break;
+                    case INDIVIDUAL:
+                        translationKey = "shop.purchasable.category.individual";
+                        break;
+                    case COMPETITOR:
+                        translationKey = "shop.purchasable.category.team";
+                }
+                itemBuilder.lore(new TranslatableComponent(translationKey));
+            }
+            return buttonManager.createButton(this, itemBuilder.get());
+        }
+
+        @Override
+        public boolean buttonClicked(ItemStack button, Player clicker, ClickType clickType, Event event) {
+            Optional<PaymentStrategy> strategy = getStrategy();
+            if (strategy.isPresent()) {
+                if (strategy.get().getContributionFilter().denies(player)) {
+                    player.sendWarning(new TranslatableComponent("shop.contribute.fail"), true);
+                    return true;
+                }
+                tracker.contribute(strategy.get(), player);
+            } else {
+                if (purchasable.getPurchaseFilter().denies(player)) {
+                    player.sendWarning(new TranslatableComponent("shop.purchase.fail"), true);
+                    return true;
+                }
+
+                if (!purchasable.getCurrency().hasCurrency(player) || (!purchasable.getCurrency().canPurchase(purchasable, player) && !purchasable.isIncremental())) {
+                    player.sendWarning(new TranslatableComponent("shop.purchase.failPoor"), true);
+                    return true;
+                }
+
+                switch (purchasable.getType()) {
+                    case COMPETITOR:
+                        tracker.startCompetitorStrategy((Competitor) player.getParty(), player, purchasable);
+                        break;
+                    case INDIVIDUAL:
+                        tracker.startIndividualStrategy(player, purchasable);
+                        break;
+                    case GLOBAL:
+                        tracker.startGlobalStrategy(purchasable, player);
+                }
+            }
+            return true;
+        }
+
+        void updateWindow(Inventory inventory) {
+            final ItemStack stack = createButton();
+            if(!Objects.equals(stack, purchasable.getSlot().getItem(inventory))) {
+                purchasable.getSlot().putItem(inventory, stack);
+            }
+        }
     }
 }

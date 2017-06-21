@@ -9,7 +9,6 @@ import org.bukkit.util.Vector;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import tc.oc.commons.bukkit.localization.BukkitTranslator;
-import tc.oc.commons.bukkit.util.ItemCreator;
 import tc.oc.pgm.filters.Filter;
 import tc.oc.pgm.filters.matcher.StaticFilter;
 import tc.oc.pgm.filters.parser.FilterParser;
@@ -41,6 +40,7 @@ public class ShopParser implements MapRootParser {
     private final FilterParser filterParser;
     private final BukkitTranslator translator;
     private final KitParser kitParser;
+    private final BlockShop.Factory blockShopFactory;
 
     private PurchaseTracker tracker;
 
@@ -52,7 +52,8 @@ public class ShopParser implements MapRootParser {
                       PrimitiveParser<Integer> integerParser,
                       FilterParser filterParser,
                       BukkitTranslator translator,
-                      KitParser kitParser) {
+                      KitParser kitParser,
+                      BlockShop.Factory blockShopFactory) {
         this.document = document;
         this.context = context;
         this.typeParser = typeParser;
@@ -61,6 +62,7 @@ public class ShopParser implements MapRootParser {
         this.filterParser = filterParser;
         this.translator = translator;
         this.kitParser = kitParser;
+        this.blockShopFactory = blockShopFactory;
     }
 
     @Override
@@ -86,6 +88,7 @@ public class ShopParser implements MapRootParser {
 
         boolean crossTeam = XMLUtils.parseBoolean(shopsRoot.getAttribute("cross-team"), false);
         boolean persistent = XMLUtils.parseBoolean(shopsRoot.getAttribute("persistent"), false);
+
         this.tracker = new SimplePurchaseTracker(crossTeam, persistent);
 
         for (Element shop : shopsRoot.getChild("shops").getChildren()) {
@@ -96,8 +99,8 @@ public class ShopParser implements MapRootParser {
     private PurchasableSet parseItemSet(Element el) throws InvalidXMLException {
         Set<Purchasable> purchasables = Sets.newHashSet();
         for (Element element : el.getChildren()) {
-            purchasables.add(new PurchasableKit(new ItemCreator(XMLUtils.parseMaterial(Node.fromAttr(element, "icon"))),
-                    integerParser.parse(Node.fromRequiredAttr(element, "slot")),
+            purchasables.add(new PurchasableKit(XMLUtils.parseMaterial(Node.fromAttr(element, "icon")),
+                    XMLUtils.parseContainerSlot(Node.fromRequiredAttr(element, "slot")),
                     doubleParser.parse(Node.fromRequiredAttr(element, "price")),
                     context.features().reference(Node.fromRequiredAttr(element, "currency"), Currency.class),
                     typeParser.parse(Node.fromRequiredAttr(element, "scope")),
@@ -150,7 +153,7 @@ public class ShopParser implements MapRootParser {
         switch (el.getName()) {
             case "block":
                 Vector location = XMLUtils.parseVector(Node.fromRequiredAttr(el, "location"));
-                return new BlockShop(this.tracker, items, title, rows, openFilter, openFailMessage, multiUse, location);
+                return blockShopFactory.create(this.tracker, items, title, rows, openFilter, openFailMessage, multiUse, location);
             default:
                 throw new InvalidXMLException("Specified shop type not found.", el);
         }

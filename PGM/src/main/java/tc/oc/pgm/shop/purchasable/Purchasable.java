@@ -1,6 +1,7 @@
 package tc.oc.pgm.shop.purchasable;
 
-import tc.oc.commons.bukkit.util.ItemCreator;
+import org.bukkit.Material;
+import tc.oc.commons.bukkit.inventory.Slot;
 import tc.oc.pgm.filters.Filter;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.shop.currency.Currency;
@@ -14,12 +15,12 @@ public interface Purchasable {
     /**
      * Get the icon that should be used for UI display.
      */
-    ItemCreator getIcon();
+    Material getIcon();
 
     /**
      * Get the slot that this item should be placed in inside of a {@link tc.oc.pgm.shop.ShopInterface}.
      */
-    int getSlot();
+    Slot getSlot();
 
     /**
      * Get the type of {@link tc.oc.pgm.shop.strategy.PaymentStrategy} that should be used for this item.
@@ -59,7 +60,7 @@ public interface Purchasable {
         /**
          * Anyone in the {@link tc.oc.pgm.match.Party} can contribute to the eventual purchase of this item.
          */
-        PARTY,
+        COMPETITOR,
         /**
          * Only the initiating {@link MatchPlayer} can contribute to the purchase of this item.
          */
@@ -68,16 +69,16 @@ public interface Purchasable {
 }
 
 abstract class PurchasableImpl implements Purchasable {
-    final ItemCreator icon;
-    final int slot;
+    final Material icon;
+    final Slot slot;
     final double cost;
     final Currency currency;
     final Type type;
     final boolean incremental;
     final Filter purchaseFilter;
 
-    public PurchasableImpl(ItemCreator icon,
-                           int slot,
+    public PurchasableImpl(Material icon,
+                           Slot slot,
                            double cost,
                            Currency currency,
                            Type type,
@@ -93,12 +94,12 @@ abstract class PurchasableImpl implements Purchasable {
     }
 
     @Override
-    public ItemCreator getIcon() {
+    public Material getIcon() {
         return icon;
     }
 
     @Override
-    public int getSlot() {
+    public Slot getSlot() {
         return slot;
     }
 

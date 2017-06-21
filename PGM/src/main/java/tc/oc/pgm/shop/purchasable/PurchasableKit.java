@@ -1,6 +1,7 @@
 package tc.oc.pgm.shop.purchasable;
 
-import tc.oc.commons.bukkit.util.ItemCreator;
+import org.bukkit.Material;
+import tc.oc.commons.bukkit.inventory.Slot;
 import tc.oc.pgm.filters.Filter;
 import tc.oc.pgm.kits.Kit;
 import tc.oc.pgm.match.MatchPlayer;
@@ -14,8 +15,8 @@ import java.util.Set;
 public class PurchasableKit extends PurchasableImpl {
     final Kit kit;
 
-    public PurchasableKit(ItemCreator icon,
-                          int slot,
+    public PurchasableKit(Material icon,
+                          Slot slot,
                           double cost,
                           Currency currency,
                           Type type,

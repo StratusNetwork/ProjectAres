@@ -3,16 +3,13 @@ package tc.oc.pgm.shop;
 import com.google.api.client.util.Maps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.bukkit.event.EventHandler;
 import tc.oc.api.docs.User;
-import tc.oc.pgm.events.PlayerChangePartyEvent;
-import tc.oc.pgm.events.PlayerJoinMatchEvent;
 import tc.oc.pgm.filters.Filter;
+import tc.oc.pgm.match.Competitor;
 import tc.oc.pgm.match.MatchPlayer;
-import tc.oc.pgm.match.Party;
 import tc.oc.pgm.shop.purchasable.Purchasable;
+import tc.oc.pgm.shop.strategy.CompetitorPaymentStrategy;
 import tc.oc.pgm.shop.strategy.GlobalPaymentStrategy;
-import tc.oc.pgm.shop.strategy.PartyPaymentStrategy;
 import tc.oc.pgm.shop.strategy.PaymentStrategy;
 import tc.oc.pgm.shop.strategy.PlayerPaymentStrategy;
 
@@ -26,7 +23,7 @@ import java.util.Set;
  */
 class SimplePurchaseTracker implements PurchaseTracker {
     private final Map<MatchPlayer, PaymentStrategy> individualStrategies;
-    private final Map<Party, PaymentStrategy> partyStrategies;
+    private final Map<Competitor, PaymentStrategy> competitorStrategies;
     private final Set<PaymentStrategy> globalStrategies;
 
     private final boolean crossParty;
@@ -34,7 +31,7 @@ class SimplePurchaseTracker implements PurchaseTracker {
 
     public SimplePurchaseTracker(boolean crossParty, boolean persistent) {
         this.individualStrategies = Maps.newHashMap();
-        this.partyStrategies = Maps.newHashMap();
+        this.competitorStrategies = Maps.newHashMap();
         this.globalStrategies = Sets.newHashSet();
         this.crossParty = crossParty;
         this.persistent = persistent;
@@ -53,9 +50,9 @@ class SimplePurchaseTracker implements PurchaseTracker {
     }
 
     @Override
-    public void startPartyStrategy(Party party, MatchPlayer player, Purchasable purchasable, Filter filter) {
-        PartyPaymentStrategy strategy = new PartyPaymentStrategy(purchasable, filter, party);
-        partyStrategies.put(party, strategy);
+    public void startCompetitorStrategy(Competitor competitor, MatchPlayer player, Purchasable purchasable, Filter filter) {
+        CompetitorPaymentStrategy strategy = new CompetitorPaymentStrategy(purchasable, filter, competitor);
+        competitorStrategies.put(competitor, strategy);
         contribute(strategy, player);
     }
 
@@ -74,17 +71,15 @@ class SimplePurchaseTracker implements PurchaseTracker {
     }
 
     @Override
-    public Optional<PaymentStrategy> getOngoingStrategy(Party party, Purchasable purchasable) {
-        if (!(party instanceof Party))
-            return Optional.empty();
-        return partyStrategies.values().stream().filter(e ->
-                e.getOwner().equals(party) && e.getPurchasable().equals(purchasable)
+    public Optional<PaymentStrategy> getOngoingStrategy(Competitor competitor, Purchasable purchasable) {
+        return competitorStrategies.values().stream().filter(e ->
+                e.getOwner().equals(competitor) && e.getPurchasable().equals(purchasable)
         ).findFirst();
     }
 
     @Override
     public Optional<PaymentStrategy> getOngoingStrategy(Purchasable purchasable) {
-        return partyStrategies.values().stream().filter(e ->
+        return competitorStrategies.values().stream().filter(e ->
                 e.getPurchasable().equals(purchasable)
         ).findFirst();
     }
@@ -102,20 +97,12 @@ class SimplePurchaseTracker implements PurchaseTracker {
                     individualStrategies.remove(player, strategy);
                     strategy.getPurchasable().reward(Sets.newHashSet(player));
                     break;
-                case PARTY:
-                    partyStrategies.remove(strategy.getOwner(), strategy);
-                    strategy.getPurchasable().reward(((Party)strategy.getOwner()).getPlayers());
+                case COMPETITOR:
+                    competitorStrategies.remove(strategy.getOwner(), strategy);
+                    strategy.getPurchasable().reward(((Competitor)strategy.getOwner()).getPlayers());
                     break;
             }
         }
-    }
-
-    @EventHandler
-    public void onChange(PlayerChangePartyEvent event) {
-        if (event.isParticipating())
-            loadFromAPI(event.getPlayer().getDocument());
-        else
-            updateAPI(event.getPlayer().getDocument());
     }
 
     @Override

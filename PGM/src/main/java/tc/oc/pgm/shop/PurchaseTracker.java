@@ -1,10 +1,9 @@
 package tc.oc.pgm.shop;
 
-import org.bukkit.event.Listener;
 import tc.oc.api.docs.User;
 import tc.oc.pgm.filters.Filter;
+import tc.oc.pgm.match.Competitor;
 import tc.oc.pgm.match.MatchPlayer;
-import tc.oc.pgm.match.Party;
 import tc.oc.pgm.shop.purchasable.Purchasable;
 import tc.oc.pgm.shop.strategy.PaymentStrategy;
 import tc.oc.pgm.shop.strategy.PlayerPaymentStrategy;
@@ -13,9 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Class which is used to track all {@link PaymentStrategy PaymentStrategies}.*
+ * Class which is used to track all {@link PaymentStrategy PaymentStrategies}.
  */
-public interface PurchaseTracker extends Listener {
+public interface PurchaseTracker {
     /**
      * Start a strategy for an individual player.
      * @param player who initiated the strategy.
@@ -26,13 +25,13 @@ public interface PurchaseTracker extends Listener {
     }
 
     /**
-     * Start a strategy for a party.
-     * @param party that the strategy is based upon.
+     * Start a strategy for a competitor.
+     * @param competitor that the strategy is based upon.
      * @param player who initiated the strategy.
      * @param purchasable that the strategy is working towards.
      */
-    default void startPartyStrategy(Party party, MatchPlayer player, Purchasable purchasable) {
-        startPartyStrategy(party, player, purchasable, defaultFilter(purchasable));
+    default void startCompetitorStrategy(Competitor competitor, MatchPlayer player, Purchasable purchasable) {
+        startCompetitorStrategy(competitor, player, purchasable, defaultFilter(purchasable));
     }
 
     /**
@@ -50,9 +49,9 @@ public interface PurchaseTracker extends Listener {
     void startIndividualStrategy(MatchPlayer player, Purchasable purchasable, Filter filter);
 
     /**
-     * {@link #startPartyStrategy(Party, MatchPlayer, Purchasable)} with a contribution filter.
+     * {@link #startCompetitorStrategy(Competitor, MatchPlayer, Purchasable)} with a contribution filter.
      */
-    void startPartyStrategy(Party party, MatchPlayer player, Purchasable purchasable, Filter filter);
+    void startCompetitorStrategy(Competitor competitor, MatchPlayer player, Purchasable purchasable, Filter filter);
 
     /**
      * {@link #startGlobalStrategy(Purchasable, MatchPlayer)} with a contribution filter.
@@ -75,12 +74,12 @@ public interface PurchaseTracker extends Listener {
     Optional<PaymentStrategy> getOngoingStrategy(MatchPlayer player, Purchasable purchasable);
 
     /**
-     * Get a party strategy that is ongoing for the supplied {@link Purchasable}.
-     * @param party that owns the strategy.
+     * Get a competitor strategy that is ongoing for the supplied {@link Purchasable}.
+     * @param competitor that owns the strategy.
      * @param purchasable that the strategy is working towards.
      * @return
      */
-    Optional<PaymentStrategy> getOngoingStrategy(Party party, Purchasable purchasable);
+    Optional<PaymentStrategy> getOngoingStrategy(Competitor competitor, Purchasable purchasable);
 
     /**
      * Get a global strategy that is ongoing for the supplied {@link Purchasable}.
