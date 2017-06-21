@@ -1,6 +1,7 @@
 package tc.oc.pgm.shop.shops;
 
 import com.google.inject.assistedinject.Assisted;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,10 +31,10 @@ public class BlockShop extends Shop implements Listener {
     @Inject public BlockShop(@Assisted PurchaseTracker tracker,
                      ShopInterface.Factory interfaceFactory,
                      @Assisted Set<PurchasableSet> items,
-                     @Assisted("title") String title,
+                     String title,
                      @Assisted int rows,
                      @Assisted Filter openFilter,
-                     @Assisted("openFailMessage") String openFailMessage,
+                     @Assisted BaseComponent openFailMessage,
                      @Assisted boolean multiUse,
                      @Assisted Vector location) {
         super(tracker, interfaceFactory, items, title, rows, openFilter, openFailMessage, multiUse);
@@ -43,10 +44,10 @@ public class BlockShop extends Shop implements Listener {
     public interface Factory {
         BlockShop create(PurchaseTracker tracker,
                     Set<PurchasableSet> items,
-                    @Assisted("title") String title,
+                    String title,
                     int rows,
                     Filter openFilter,
-                    @Assisted("openFailMessage") String openFailMessage,
+                    BaseComponent openFailMessage,
                     boolean multiUse,
                     Vector location);
     }

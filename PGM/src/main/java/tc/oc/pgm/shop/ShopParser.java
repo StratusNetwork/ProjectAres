@@ -145,7 +145,7 @@ public class ShopParser implements MapRootParser {
         final int rows = integerParser.parse(Node.fromAttr(el, "rows"));
 
         final Filter openFilter = filterParser.property(el, "open-filter").optional(StaticFilter.ALLOW);
-        final String openFailMessage = el.getAttributeValue("open-fail", "You cannot open this shop at this time.");
+        final BaseComponent openFailMessage = XMLUtils.parseFormattedText(el, "open-fail", new TranslatableComponent("shop.openFail"));
 
         final boolean multiUse = XMLUtils.parseBoolean(el.getAttribute("multi-use"), true);
 

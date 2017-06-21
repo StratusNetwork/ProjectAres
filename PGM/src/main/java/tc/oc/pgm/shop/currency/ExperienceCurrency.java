@@ -33,7 +33,7 @@ public class ExperienceCurrency extends FeatureDefinition.Impl implements Curren
 
     @Override
     public boolean hasCurrency(MatchPlayer player) {
-        return player.getBukkit().getLevel() >- 1;
+        return player.getBukkit().getLevel() >= 1;
     }
 
     @Override

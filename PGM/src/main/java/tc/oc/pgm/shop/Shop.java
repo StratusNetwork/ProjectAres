@@ -1,5 +1,6 @@
 package tc.oc.pgm.shop;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import tc.oc.pgm.features.FeatureDefinition;
 import tc.oc.pgm.features.FeatureInfo;
@@ -21,7 +22,7 @@ public abstract class Shop extends FeatureDefinition.Impl {
     @Inspect final String title;
     @Inspect final int rows;
     @Inspect final @Nullable Filter openFilter;
-    @Inspect final @Nullable String openFailMessage;
+    @Inspect final @Nullable BaseComponent openFailMessage;
     @Inspect final @Nullable boolean multiUse;
     @Inspect boolean inUse;
 
@@ -33,7 +34,7 @@ public abstract class Shop extends FeatureDefinition.Impl {
                 String title,
                 int rows,
                 Filter openFilter,
-                String openFailMessage,
+                BaseComponent openFailMessage,
                 boolean multiUse) {
         this.tracker = tracker;
         this.interfaceFactory = interfaceFactory;
