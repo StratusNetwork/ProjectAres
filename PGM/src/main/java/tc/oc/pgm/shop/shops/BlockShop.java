@@ -59,7 +59,7 @@ public class BlockShop extends Shop implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onClick(PlayerInteractEvent event) {
-        if (!event.getClickedBlock().getLocation().toVector().equals(this.location))
+        if (event.getClickedBlock() == null || !event.getClickedBlock().getLocation().toVector().equals(this.location))
             return;
         MatchPlayer player = match.getPlayer(event.getPlayer());
         if (player == null || player.isObserving())
