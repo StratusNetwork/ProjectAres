@@ -120,7 +120,7 @@ public class ShopParser implements MapRootParser {
         switch (el.getName()) {
             case "material":
                 ItemStack stack = itemParser.parse(node);
-                Node nameSingle = Node.fromAttr(el, "name-singular");
+                Node nameSingle = Node.fromAttr(el, "name-singular", "name");
                 Node namePlural = Node.fromAttr(el, "name-plural");
                 BaseComponent name = new TranslatableComponent(
                         translator.materialKey(stack.getType())
@@ -129,6 +129,7 @@ public class ShopParser implements MapRootParser {
                 BaseComponent single = nameSingle == null ? name : new TextComponent(nameSingle.getValue());
                 BaseComponent plural = namePlural == null ? name : new TextComponent(namePlural.getValue());
                 return new MaterialCurrency(stack, single, plural, doubleParser.parse(Node.fromAttr(el, "value")));
+            case "experience":
             case "exp":
                 return new ExperienceCurrency();
             default:
