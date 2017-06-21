@@ -1,11 +1,16 @@
 package tc.oc.pgm.filters.matcher.player;
 
 import org.bukkit.inventory.ItemStack;
+import tc.oc.pgm.filters.ItemMatcher;
 import tc.oc.pgm.match.MatchPlayer;
 
 public class CarryingItemFilter extends SpawnedPlayerItemFilter {
     public CarryingItemFilter(ItemStack base) {
         super(base);
+    }
+
+    public CarryingItemFilter(ItemMatcher matcher) {
+        super(matcher);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.google.api.client.util.Sets;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -12,6 +12,7 @@ import tc.oc.commons.bukkit.localization.BukkitTranslator;
 import tc.oc.pgm.filters.Filter;
 import tc.oc.pgm.filters.matcher.StaticFilter;
 import tc.oc.pgm.filters.parser.FilterParser;
+import tc.oc.pgm.kits.ItemParser;
 import tc.oc.pgm.kits.KitParser;
 import tc.oc.pgm.map.MapModuleContext;
 import tc.oc.pgm.map.MapRootParser;
@@ -40,6 +41,7 @@ public class ShopParser implements MapRootParser {
     private final FilterParser filterParser;
     private final BukkitTranslator translator;
     private final KitParser kitParser;
+    private final ItemParser itemParser;
     private final BlockShop.Factory blockShopFactory;
 
     private PurchaseTracker tracker;
@@ -53,6 +55,7 @@ public class ShopParser implements MapRootParser {
                       FilterParser filterParser,
                       BukkitTranslator translator,
                       KitParser kitParser,
+                      ItemParser itemParser,
                       BlockShop.Factory blockShopFactory) {
         this.document = document;
         this.context = context;
@@ -62,6 +65,7 @@ public class ShopParser implements MapRootParser {
         this.filterParser = filterParser;
         this.translator = translator;
         this.kitParser = kitParser;
+        this.itemParser = itemParser;
         this.blockShopFactory = blockShopFactory;
     }
 
@@ -78,11 +82,11 @@ public class ShopParser implements MapRootParser {
         if (shopsRoot.getChild("shops") == null)
             throw new InvalidXMLException("No shops are defined.", shopsRoot);
 
-        for (Element currency : shopsRoot.getChild("currencies").getChildren()) {
+        for (Element currency : XMLUtils.flattenElements(shopsRoot, "currencies")) {
             context.features().define(currency, parseCurrency(currency));
         }
 
-        for (Element itemSet : shopsRoot.getChild("item-sets").getChildren()) {
+        for (Element itemSet : XMLUtils.flattenElements(shopsRoot, "item-sets")) {
             context.features().define(itemSet, parseItemSet(itemSet));
         }
 
@@ -91,7 +95,7 @@ public class ShopParser implements MapRootParser {
 
         this.tracker = new SimplePurchaseTracker(crossTeam, persistent);
 
-        for (Element shop : shopsRoot.getChild("shops").getChildren()) {
+        for (Element shop : XMLUtils.flattenElements(shopsRoot, "shops")) {
             context.features().define(shop, parseShop(shop));
         }
     }
@@ -115,16 +119,16 @@ public class ShopParser implements MapRootParser {
         Node node = new Node(el);
         switch (el.getName()) {
             case "material":
-                Material material = XMLUtils.parseMaterial(node);
+                ItemStack stack = itemParser.parse(node);
                 Node nameSingle = Node.fromAttr(el, "name-singular");
                 Node namePlural = Node.fromAttr(el, "name-plural");
                 BaseComponent name = new TranslatableComponent(
-                        translator.materialKey(material)
-                                .orElseThrow(() -> new InvalidXMLException("No localized name for material " + material))
+                        translator.materialKey(stack.getType())
+                                .orElseThrow(() -> new InvalidXMLException("No localized name for material " + stack.getType()))
                 );
                 BaseComponent single = nameSingle == null ? name : new TextComponent(nameSingle.getValue());
                 BaseComponent plural = namePlural == null ? name : new TextComponent(namePlural.getValue());
-                return new MaterialCurrency(material, single, plural, doubleParser.parse(Node.fromAttr(el, "value")));
+                return new MaterialCurrency(stack, single, plural, doubleParser.parse(Node.fromAttr(el, "value")));
             case "exp":
                 return new ExperienceCurrency();
             default:
