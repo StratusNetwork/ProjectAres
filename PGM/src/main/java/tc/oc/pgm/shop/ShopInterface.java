@@ -128,6 +128,9 @@ public class ShopInterface {
                 throw new UnsupportedOperationException("Tried to create button for observer.");
 
             RenderedItemBuilder itemBuilder = itemBuilders.create(player.getBukkit());
+            itemBuilder.name(purchasable.getName());
+            if (purchasable.getDescription() != null)
+                itemBuilder.lore(purchasable.getDescription());
             itemBuilder.material(purchasable.getIcon());
             Optional<PaymentStrategy> strategy = getStrategy();
             if (strategy.isPresent()) {

@@ -103,7 +103,9 @@ public class ShopParser implements MapRootParser {
     private PurchasableSet parseItemSet(Element el) throws InvalidXMLException {
         Set<Purchasable> purchasables = Sets.newHashSet();
         for (Element element : el.getChildren()) {
-            purchasables.add(new PurchasableKit(XMLUtils.parseMaterial(Node.fromAttr(element, "icon")),
+            purchasables.add(new PurchasableKit(XMLUtils.parseFormattedText(Node.fromRequiredAttr(element, "name")),
+                    XMLUtils.parseFormattedText(element, "description"),
+                    XMLUtils.parseMaterial(Node.fromRequiredAttr(element, "icon")),
                     XMLUtils.parseContainerSlot(Node.fromRequiredAttr(element, "slot")),
                     doubleParser.parse(Node.fromRequiredAttr(element, "price")),
                     context.features().reference(Node.fromRequiredAttr(element, "currency"), Currency.class),

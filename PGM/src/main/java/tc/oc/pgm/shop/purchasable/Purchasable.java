@@ -1,17 +1,30 @@
 package tc.oc.pgm.shop.purchasable;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Material;
 import tc.oc.commons.bukkit.inventory.Slot;
 import tc.oc.pgm.filters.Filter;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.shop.currency.Currency;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
  * Represents anything that can be purchased with {@link Currency}.
  */
 public interface Purchasable {
+    /**
+     * Name of the item.
+     */
+    BaseComponent getName();
+
+    /**
+     * Description of the item.
+     */
+    @Nullable
+    BaseComponent getDescription();
+
     /**
      * Get the icon that should be used for UI display.
      */
@@ -69,6 +82,8 @@ public interface Purchasable {
 }
 
 abstract class PurchasableImpl implements Purchasable {
+    final BaseComponent name;
+    @Nullable final BaseComponent description;
     final Material icon;
     final Slot slot;
     final double cost;
@@ -77,13 +92,17 @@ abstract class PurchasableImpl implements Purchasable {
     final boolean incremental;
     final Filter purchaseFilter;
 
-    public PurchasableImpl(Material icon,
+    public PurchasableImpl(BaseComponent name,
+                           @Nullable BaseComponent description,
+                           Material icon,
                            Slot slot,
                            double cost,
                            Currency currency,
                            Type type,
                            boolean incremental,
                            Filter purchaseFilter) {
+        this.name = name;
+        this.description = description;
         this.icon = icon;
         this.slot = slot;
         this.cost = cost;
@@ -91,6 +110,17 @@ abstract class PurchasableImpl implements Purchasable {
         this.type = type;
         this.incremental = incremental;
         this.purchaseFilter = purchaseFilter;
+    }
+
+    @Override
+    public BaseComponent getName() {
+        return name;
+    }
+
+    @Override
+    @Nullable
+    public BaseComponent getDescription() {
+        return description;
     }
 
     @Override
