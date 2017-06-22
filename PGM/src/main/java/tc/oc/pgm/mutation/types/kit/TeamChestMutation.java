@@ -47,9 +47,12 @@ public class TeamChestMutation extends KitMutation {
 
     @EventHandler
     public void blockPlace(PlayerInteractEvent e) {
-        Player player = e.getPlayer();
-        MatchPlayer matchPlayer = match().getPlayer(player);
-        handleInventoryOpen(matchPlayer);
+        if (e.getItem().isSimilar(chestAsItem())) {
+            Player player = e.getPlayer();
+            MatchPlayer matchPlayer = match().getPlayer(player);
+            handleInventoryOpen(matchPlayer);
+            e.setCancelled(true);
+        }
     }
 
     private ItemStack chestAsItem() {
@@ -62,10 +65,10 @@ public class TeamChestMutation extends KitMutation {
         }
         if (!(TEAM_INVENTORY.containsKey((Team) matchPlayer.getParty()))) {
             Inventory inventory = Bukkit.createInventory(null, InventoryType.CHEST, "Team Chest");
-            TEAM_INVENTORY.put((Team)matchPlayer.getParty(), inventory);
+            TEAM_INVENTORY.put((Team) matchPlayer.getParty(), inventory);
             matchPlayer.getBukkit().openInventory(inventory);
         } else {
-            matchPlayer.getBukkit().openInventory(TEAM_INVENTORY.get((Team)matchPlayer.getParty()));
+            matchPlayer.getBukkit().openInventory(TEAM_INVENTORY.get((Team) matchPlayer.getParty()));
         }
     }
 }
