@@ -24,7 +24,7 @@ import java.util.WeakHashMap;
 public class TeamChestMutation extends KitMutation {
 
     private final static FreeItemKit TEAM_CHEST = new FreeItemKit(new ItemBuilder()
-            .material(Material.ENDER_CHEST)
+            .material(Material.CHEST)
             .name(Constants.PREFIX + "Team Chest")
             .lore(Constants.SUBTEXT + "Place down to open!")
             .get());
