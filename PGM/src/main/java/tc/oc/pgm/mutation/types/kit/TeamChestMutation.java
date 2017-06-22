@@ -2,6 +2,7 @@ package tc.oc.pgm.mutation.types.kit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -46,11 +47,9 @@ public class TeamChestMutation extends KitMutation {
 
     @EventHandler
     public void blockPlace(PlayerInteractEvent e) {
-        MatchPlayer matchPlayer = (MatchPlayer)e.getPlayer();
-        if (e.getItem().isSimilar(chestAsItem())) {
-            e.setCancelled(true);
-            handleInventoryOpen(matchPlayer);
-        }
+        Player player = e.getPlayer();
+        MatchPlayer matchPlayer = match().getPlayer(player);
+        handleInventoryOpen(matchPlayer);
     }
 
     private ItemStack chestAsItem() {
