@@ -28,6 +28,7 @@ import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.EntityTrackerEntry;
 import net.minecraft.server.EntityTypes;
+import net.minecraft.server.EntityWither;
 import net.minecraft.server.EntityZombie;
 import net.minecraft.server.EnumGamemode;
 import net.minecraft.server.EnumHand;
@@ -92,6 +93,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Wither;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
@@ -403,12 +405,46 @@ public class NMSHacks {
         }
     }
 
+    public static class FakeWither extends FakeLivingEntity<EntityWither> {
+
+        public FakeWither(World world, @Nullable String name) {
+            super(new EntityWither(((CraftWorld) world).getHandle()));
+
+            entity.setNoAI(true);
+            entity.setNoGravity(true);
+            entity.setSilent(true);
+            entity.setInvulnerable(true);
+            entity.setInvisible(true);
+            entity.setCustomNameVisible(true);
+            entity.g(890); // Required to make the wither extremely small
+
+            if(name != null) {
+                entity.setCustomName(name);
+            }
+        }
+
+        public void update(Player viewer, @Nullable String name, @Nullable Double percent, boolean send) {
+            if(name != null) entity.setCustomName(name);
+            if(percent != null) entity.setHealth(percent.floatValue() * entity.getMaxHealth());
+            if(send) sendPacket(viewer, entityMetadataPacket(entity, true));
+        }
+
+        public void name(Player viewer, String name, boolean update) {
+            update(viewer, name, null, update);
+        }
+
+        public void health(Player viewer, double percent, boolean update) {
+            update(viewer, null, percent, update);
+        }
+
+    }
+
     public static class FakeZombie extends FakeLivingEntity<EntityZombie> {
         public FakeZombie(World world, boolean invisible) {
             super(new EntityZombie(((CraftWorld) world).getHandle()));
 
             entity.setInvisible(invisible);
-            entity.setAI(true);
+            entity.setNoAI(false);
         }
     }
 
@@ -684,7 +720,7 @@ public class NMSHacks {
 
         // Add/replace health to zero
         boolean replaced = false;
-        DataWatcher.Item<Float> zeroHealth = new DataWatcher.Item<>(EntityPlayer.class, EntityLiving.HEALTH, 0f);
+        DataWatcher.Item<Float> zeroHealth = new DataWatcher.Item<>(EntityLiving.HEALTH, 0f);
 
         if(packet.b != null) {
             for(int i = 0; i < packet.b.size(); i++) {
