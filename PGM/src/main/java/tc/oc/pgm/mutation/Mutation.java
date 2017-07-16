@@ -17,6 +17,7 @@ import tc.oc.pgm.mutation.types.other.RageMutation;
 import tc.oc.pgm.mutation.types.targetable.ApocalypseMutation;
 import tc.oc.pgm.mutation.types.targetable.BomberMutation;
 import tc.oc.pgm.mutation.types.targetable.LightningMutation;
+import tc.oc.pgm.teams.Team;
 
 import java.util.stream.Stream;
 
@@ -40,6 +41,7 @@ public enum Mutation {
     LIGHTNING  (LightningMutation.class,   Material.JACK_O_LANTERN),
     BOMBER     (BomberMutation.class,      Material.TNT),
     BREAD      (BreadMutation.class,       Material.BREAD),
+    TEAMCHEST  (TeamChestMutation.class,   Material.ENDER_CHEST, false),
     BOAT       (BoatMutation.class,        Material.BOAT, false),
     TOOLS      (ToolsMutation.class,       Material.DIAMOND_PICKAXE),
     APOCALYPSE (ApocalypseMutation.class,  Material.NETHER_STAR);
