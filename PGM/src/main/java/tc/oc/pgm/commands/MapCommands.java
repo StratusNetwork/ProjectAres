@@ -1,8 +1,7 @@
 package tc.oc.pgm.commands;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Collections2;
@@ -29,6 +28,8 @@ import tc.oc.commons.bukkit.nick.UsernameRenderer;
 import tc.oc.commons.core.chat.Audience;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.chat.Components;
+import tc.oc.commons.core.formatting.StringUtils;
+import tc.oc.commons.core.stream.Collectors;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.ffa.FreeForAllModule;
@@ -45,20 +46,47 @@ public class MapCommands {
     @Command(
         aliases = {"maplist", "maps", "ml"},
         desc = "Shows the maps that are currently loaded",
-        usage = "[page]",
+        usage = "[author] [gamemode] [page]",
         min = 0,
-        max = 1,
+        max = 2,
+        flags = "ag",
         help = "Shows all the maps that are currently loaded including ones that are not in the rotation."
     )
     @CommandPermissions("pgm.maplist")
-    public static void maplist(CommandContext args, final CommandSender sender) throws CommandException {
+    public List<String> maplist(CommandContext args, final CommandSender sender) throws CommandException {
         final Set<PGMMap> maps = ImmutableSortedSet.copyOf(new PGMMap.DisplayOrder(), PGM.getMatchManager().getMaps());
+        Set<PGMMap> toDisplay = new HashSet<>();
 
+        for (PGMMap map : maps) {
+            if (!args.getFlags().isEmpty() && args.argsLength() == 1) {
+                if (args.hasFlag('a')) {
+                    List<Contributor> authors = map.getInfo().getNamedAuthors();
+                    for (Contributor author : authors) {
+                        if (author.getName().toLowerCase().equalsIgnoreCase(args.getString(0))) {
+                            toDisplay.add(map);
+                        }
+                    }
+                }
+                if (args.hasFlag('g')) {
+                    if (args.getSuggestionContext() != null) {
+                        List<String> stringList = Arrays.stream(MapDoc.Gamemode.values()).map(Enum::toString).collect(Collectors.toImmutableList());
+                        return StringUtils.complete(args.getString(0), stringList);
+                    }
+                    Set<MapDoc.Gamemode> gamemodes = map.getDocument().gamemode().stream()
+                            .filter(gm -> gm.name().equalsIgnoreCase(args.getString(0)))
+                            .collect(Collectors.toImmutableSet());
+                    if (!gamemodes.isEmpty()) {
+                        toDisplay.add(map);
+                    }
+                }
+            }
+        }
         new PrettyPaginatedResult<PGMMap>(PGMTranslations.get().t("command.map.mapList.title", sender)) {
             @Override public String format(PGMMap map, int index) {
                 return (index + 1) + ". " + map.getInfo().getShortDescription(sender);
             }
-        }.display(new BukkitWrappedCommandSender(sender), maps, args.getInteger(0, 1) /* page */);
+        }.display(new BukkitWrappedCommandSender(sender), args.getFlags().isEmpty() ? maps : toDisplay, args.getFlags().isEmpty() ? args.getInteger(0, 1) : args.getInteger(1, 1) /* page */);
+        return null;
     }
 
     private static BaseComponent mapInfoLabel(String key) {
