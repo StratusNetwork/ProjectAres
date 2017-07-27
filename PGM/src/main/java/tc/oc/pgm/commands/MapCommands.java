@@ -1,8 +1,11 @@
 package tc.oc.pgm.commands;
 
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSortedSet;
@@ -16,20 +19,26 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.command.CommandSender;
+import tc.oc.api.docs.User;
 import tc.oc.api.docs.virtual.MapDoc;
 import tc.oc.api.util.Permissions;
 import tc.oc.commons.bukkit.chat.BukkitAudiences;
+import tc.oc.commons.bukkit.chat.ComponentRenderContext;
 import tc.oc.commons.bukkit.chat.NameStyle;
 import tc.oc.commons.bukkit.chat.PlayerComponent;
+import tc.oc.commons.bukkit.chat.UserTextComponent;
 import tc.oc.commons.bukkit.commands.PrettyPaginatedResult;
+import tc.oc.commons.bukkit.commands.UserFinder;
 import tc.oc.commons.bukkit.localization.Translations;
 import tc.oc.commons.bukkit.nick.Identity;
+import tc.oc.commons.bukkit.nick.IdentityProvider;
 import tc.oc.commons.bukkit.nick.UsernameRenderer;
 import tc.oc.commons.core.chat.Audience;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.chat.Components;
-import tc.oc.commons.core.formatting.StringUtils;
-import tc.oc.commons.core.stream.Collectors;
+import tc.oc.commons.core.commands.CommandFutureCallback;
+import tc.oc.commons.core.commands.Commands;
+import tc.oc.minecraft.scheduler.SyncExecutor;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.ffa.FreeForAllModule;
@@ -42,51 +51,102 @@ import tc.oc.pgm.rotation.RotationProviderInfo;
 import tc.oc.pgm.rotation.RotationState;
 import tc.oc.pgm.teams.TeamFactory;
 
-public class MapCommands {
+public class MapCommands implements Commands {
+    private final UserFinder userFinder;
+    private final SyncExecutor syncExecutor;
+    private final IdentityProvider identityProvider;
+    private final ComponentRenderContext renderer;
+
+    @Inject MapCommands(UserFinder userFinder, IdentityProvider identityProvider, SyncExecutor syncExecutor, ComponentRenderContext renderer) {
+        this.userFinder = userFinder;
+        this.identityProvider = identityProvider;
+        this.syncExecutor = syncExecutor;
+        this.renderer = renderer;
+    }
+
     @Command(
         aliases = {"maplist", "maps", "ml"},
         desc = "Shows the maps that are currently loaded",
-        usage = "[author] [gamemode] [page]",
+        usage = "[-a author] [-g gamemode] [page]",
         min = 0,
         max = 2,
-        flags = "ag",
+        flags = "a:g:",
         help = "Shows all the maps that are currently loaded including ones that are not in the rotation."
     )
     @CommandPermissions("pgm.maplist")
-    public List<String> maplist(CommandContext args, final CommandSender sender) throws CommandException {
-        final Set<PGMMap> maps = ImmutableSortedSet.copyOf(new PGMMap.DisplayOrder(), PGM.getMatchManager().getMaps());
-        Set<PGMMap> toDisplay = new HashSet<>();
-
-        for (PGMMap map : maps) {
-            if (!args.getFlags().isEmpty() && args.argsLength() == 1) {
-                if (args.hasFlag('a')) {
-                    List<Contributor> authors = map.getInfo().getNamedAuthors();
-                    for (Contributor author : authors) {
-                        if (author.getName().toLowerCase().equalsIgnoreCase(args.getString(0))) {
-                            toDisplay.add(map);
-                        }
+    public void maplist(final CommandContext args, final CommandSender sender) throws CommandException {
+        final Identity senderIdentity = identityProvider.createIdentity(sender);
+        final MapDoc.Gamemode gamemode = parseGamemode(args.getFlag('g'));
+        final String author = args.getFlag('a');
+        if(args.getFlag('a') != null) {
+            syncExecutor.callback(
+                userFinder.findUser(sender, author, UserFinder.Scope.ALL, UserFinder.Default.NULL),
+                CommandFutureCallback.onSuccess(sender, result -> {
+                        BaseComponent displayMsg = gamemode != null ?
+                            new TranslatableComponent("command.map.mapList.displayByBoth",
+                                new PlayerComponent(identityProvider.currentIdentity(result.user)),
+                                new UserTextComponent(senderIdentity, gamemode.name())) :
+                            new TranslatableComponent("command.map.mapList.displayByAuthor",
+                                new PlayerComponent(identityProvider.createIdentity(result.user)));
+                        displayMaps(sender,
+                            displayMsg,
+                            getFilteredMaps(gamemode, result.user),
+                            args);
                     }
-                }
-                if (args.hasFlag('g')) {
-                    if (args.getSuggestionContext() != null) {
-                        List<String> stringList = Arrays.stream(MapDoc.Gamemode.values()).map(Enum::toString).collect(Collectors.toImmutableList());
-                        return StringUtils.complete(args.getString(0), stringList);
-                    }
-                    Set<MapDoc.Gamemode> gamemodes = map.getDocument().gamemode().stream()
-                            .filter(gm -> gm.name().equalsIgnoreCase(args.getString(0)))
-                            .collect(Collectors.toImmutableSet());
-                    if (!gamemodes.isEmpty()) {
-                        toDisplay.add(map);
-                    }
-                }
-            }
+                ));
+        } else if(gamemode != null) {
+            displayMaps(sender,
+                new TranslatableComponent("command.map.mapList.displayByGamemode",
+                    new UserTextComponent(senderIdentity, gamemode.name())),
+                getFilteredMaps(gamemode, null),
+                args);
+        } else {
+            displayMaps(sender,
+                new TranslatableComponent("command.map.mapList.title"),
+                getFilteredMaps(null, null), args);
         }
-        new PrettyPaginatedResult<PGMMap>(PGMTranslations.get().t("command.map.mapList.title", sender)) {
-            @Override public String format(PGMMap map, int index) {
-                return (index + 1) + ". " + map.getInfo().getShortDescription(sender);
+    }
+
+    private MapDoc.Gamemode parseGamemode(@Nullable String gamemode) throws CommandException {
+        if (gamemode == null) return null;
+        try {
+            return MapDoc.Gamemode.valueOf(gamemode);
+        } catch (IllegalArgumentException e) {
+            throw new CommandException("Invalid input " + gamemode);
+        }
+    }
+
+    /**
+     * Returns a list of filtered map with the given parameters.
+     * If both parameters are null, this method returns the full set of maps from the repository.
+     *
+     * @param gamemode Gamemode used to filter the map with - can be null.
+     * @param author   An author given from the result of a UserFinder - can be null.
+     */
+    private Set<PGMMap> getFilteredMaps(@Nullable MapDoc.Gamemode gamemode, @Nullable User author) {
+        final Set<PGMMap> maps = ImmutableSortedSet.copyOf(new PGMMap.DisplayOrder(), PGM.get().getMapLibrary().getMaps());
+        if(gamemode == null && author == null) return maps;
+
+        return maps.stream().filter(m -> (gamemode == null || m.getDocument().gamemode().contains(gamemode)) &&
+            (author == null || m.getDocument().author_uuids().contains(author.uuid())))
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a PrettyPaginatedResult of the list of maps given.
+     *
+     * @param sender CommandSender to display to.
+     * @param title  BaseComponent of the title to be provided for display.
+     * @param maps   The list of maps to be formatted and displayed.
+     * @param args   The arguments of a command.
+     */
+    private void displayMaps(CommandSender sender, BaseComponent title, Set<PGMMap> maps, CommandContext args) throws CommandException {
+        new PrettyPaginatedResult<PGMMap>(renderer.renderLegacy(title, sender)) {
+            @Override
+            public String format(PGMMap pgmMap, int i) {
+                return (i + 1) + ". " + pgmMap.getInfo().getShortDescription(sender);
             }
-        }.display(new BukkitWrappedCommandSender(sender), args.getFlags().isEmpty() ? maps : toDisplay, args.getFlags().isEmpty() ? args.getInteger(0, 1) : args.getInteger(1, 1) /* page */);
-        return null;
+        }.display(new BukkitWrappedCommandSender(sender), maps, args.getInteger(0, 1) /*page*/);
     }
 
     private static BaseComponent mapInfoLabel(String key) {
