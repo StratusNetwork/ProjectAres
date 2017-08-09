@@ -40,6 +40,7 @@ public abstract class PrettyPaginatedResult<T> extends PaginatedResult<T> {
         return ChatUtils.horizontalLineHeading(message, dashColor, ChatUtils.MAX_CHAT_WIDTH);
     }
 
+    //TODO: Make this return a Component instead of a String
     public String formatEmpty() {
         return ChatColor.RED + "No results";
     }
