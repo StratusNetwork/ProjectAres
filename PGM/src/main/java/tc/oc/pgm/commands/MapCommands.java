@@ -33,6 +33,7 @@ import tc.oc.pgm.PGM;
 import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.ffa.FreeForAllModule;
 import tc.oc.pgm.map.Contributor;
+import tc.oc.pgm.map.Organization;
 import tc.oc.pgm.map.MapInfo;
 import tc.oc.pgm.map.PGMMap;
 import tc.oc.pgm.modules.InfoModule;
@@ -141,6 +142,13 @@ public class MapCommands {
             audience.sendMessage(mapInfoLabel("command.map.mapInfo.contributors"));
             for(Contributor contributor : contributors) {
                 audience.sendMessage(new Component("  ").extra(formatContribution(contributor)));
+            }
+        }
+        List<Organization> organizations = mapInfo.getNamedOrganizations();
+        if(!organizations.isEmpty()) {
+            audience.sendMessage(mapInfoLabel("command.map.mapInfo.organizations"));
+            for(Contributor organization : organizations) {
+                audience.sendMessage(new Component("  ").extra(formatContribution(organization)));
             }
         }
 
