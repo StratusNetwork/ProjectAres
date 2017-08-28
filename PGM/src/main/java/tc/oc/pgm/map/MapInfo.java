@@ -51,6 +51,9 @@ public class MapInfo implements Comparable<MapInfo> {
     /** List of contributors and their contributions. */
     public final List<Contributor> contributors;
 
+    /** List of organizations and their contributions. */
+    public final List<Organization> organizations;
+
     /** List of rules for this map. */
     public final List<String> rules;
 
@@ -152,6 +155,10 @@ public class MapInfo implements Comparable<MapInfo> {
 
     public List<Contributor> getNamedContributors() {
         return Contributor.filterNamed(this.contributors);
+    }
+
+    public List<Contributor> getNamedOrganizations() {
+        return Organization.filterNamed(this.organizations);
     }
 
     public Stream<Contributor> allContributors() {
