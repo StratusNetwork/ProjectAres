@@ -46,6 +46,8 @@ public class HeadlessHorsemanGizmo extends Gizmo implements Listener {
             createEffect(player);
         } else {
             mutated.get(player).restore();
+            mutated.remove(player);
+            horseByPlayer.remove(player);
         }
     }
 
