@@ -1,6 +1,6 @@
 package tc.oc.lobby.bukkit.gizmos.halloween;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -8,16 +8,18 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import tc.oc.commons.bukkit.inventory.ArmorType;
+import tc.oc.commons.bukkit.inventory.Slot;
 import tc.oc.commons.bukkit.item.ItemBuilder;
 
 public class HeadlessHorseman {
-    private final static ImmutableSet<Material> ARMOR_SET = new ImmutableSet.Builder<Material>()
-        .add(Material.PUMPKIN)
-        .add(Material.LEATHER_CHESTPLATE)
-        .add(Material.LEATHER_LEGGINGS)
-        .add(Material.LEATHER_BOOTS)
-        .build();
+    private final static ImmutableMap<Slot, ItemStack> ARMOR_MAP = ImmutableMap.of(
+        Slot.Armor.forType(ArmorType.HELMET), new ItemBuilder().material(Material.PUMPKIN).get(),
+        Slot.Armor.forType(ArmorType.CHESTPLATE), new ItemBuilder().material(Material.LEATHER_CHESTPLATE).get(),
+        Slot.Armor.forType(ArmorType.LEGGINGS), new ItemBuilder().material(Material.LEATHER_LEGGINGS).get(),
+        Slot.Armor.forType(ArmorType.BOOTS), new ItemBuilder().material(Material.LEATHER_BOOTS).get());
 
     private final static EntityType HORSE_TYPE = EntityType.SKELETON_HORSE;
     private final Player viewer;
@@ -32,42 +34,18 @@ public class HeadlessHorseman {
 
     private void mutate() {
         headlessHorse.spawn(viewer.getLocation(), (Class<AbstractHorse>) HORSE_TYPE.getEntityClass());
-        ARMOR_SET.forEach(this::colorAndEquip);
+        ARMOR_MAP.forEach(this::colorAndEquip);
         viewer.playSound(viewer.getLocation(), Sound.ENTITY_SKELETON_HORSE_DEATH, 1.5f, 1.5f);
     }
 
-    /**
-     * Currently gives armor pieces a deep purple color by RGB
-     * Ugly method to equip pumpkin
-     *
-     * TODO: refactor methods
-     */
-    private void colorAndEquip(Material material) {
-        ItemStack item = new ItemBuilder().material(material)
-            .amount(1)
-            .unbreakable(true)
-            .shareable(false)
-            .get();
-
-        if (material != Material.PUMPKIN) {
-            LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
-            meta.setColor(ARMOR_COLOR);
+    private void colorAndEquip(Slot slot, ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof LeatherArmorMeta) {
+            LeatherArmorMeta armorMeta = (LeatherArmorMeta) meta;
+            armorMeta.setColor(ARMOR_COLOR);
             item.setItemMeta(meta);
-
-            switch (item.getType()) {
-                case LEATHER_CHESTPLATE:
-                    viewer.getInventory().setChestplate(item);
-                    break;
-                case LEATHER_LEGGINGS:
-                    viewer.getInventory().setLeggings(item);
-                    break;
-                case LEATHER_BOOTS:
-                    viewer.getInventory().setBoots(item);
-                    break;
-            }
-        } else {
-            viewer.getInventory().setHelmet(item);
         }
+        slot.putItem(viewer.getInventory(), item);
     }
 
     public void restore() {
