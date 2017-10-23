@@ -16,7 +16,7 @@ import tc.oc.commons.bukkit.item.ItemBuilder;
 
 public class HeadlessHorseman {
     private final static ImmutableMap<Slot, ItemStack> ARMOR_MAP = ImmutableMap.of(
-        Slot.Armor.forType(ArmorType.HELMET), new ItemBuilder().material(Material.PUMPKIN).get(),
+        Slot.Armor.forType(ArmorType.HELMET), new ItemBuilder().material(Material.JACK_O_LANTERN).get(),
         Slot.Armor.forType(ArmorType.CHESTPLATE), new ItemBuilder().material(Material.LEATHER_CHESTPLATE).get(),
         Slot.Armor.forType(ArmorType.LEGGINGS), new ItemBuilder().material(Material.LEATHER_LEGGINGS).get(),
         Slot.Armor.forType(ArmorType.BOOTS), new ItemBuilder().material(Material.LEATHER_BOOTS).get());
