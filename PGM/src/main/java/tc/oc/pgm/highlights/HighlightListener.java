@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import tc.oc.commons.bukkit.chat.NameStyle;
+import tc.oc.commons.bukkit.nick.IdentityProvider;
 import tc.oc.commons.bukkit.tokens.TokenUtil;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.pgm.Config;
@@ -19,11 +20,13 @@ import javax.inject.Inject;
 
 public class HighlightListener implements Listener {
 
-    private final MatchScheduler scheduler;
+    private MatchScheduler scheduler;
+    private IdentityProvider identityProvider;
 
     @Inject
-    HighlightListener(MatchScheduler scheduler) {
+    HighlightListener(MatchScheduler scheduler, IdentityProvider identityProvider) {
         this.scheduler = scheduler;
+        this.identityProvider = identityProvider;
     }
 
     @EventHandler
@@ -87,7 +90,7 @@ public class HighlightListener implements Listener {
                             TokenUtil.giveMapTokens(TokenUtil.getUser(bestPlayer.getBukkit()), 1);
                             appendMe = ChatColor.YELLOW + ": +1 SetNext Token!";
                         }
-                        subtitle = new Component(bestPlayer.getDisplayName() + appendMe);
+                        subtitle = new Component(identityProvider.currentIdentity(bestPlayer.getPlayerId()) + appendMe);
                     } else {
                         subtitle = new Component(bestPlayer.getStyledName(NameStyle.COLOR));
                     }
