@@ -34,8 +34,7 @@ public class HeadlessHorsemanGizmo extends Gizmo implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if(e.getAction() == Action.PHYSICAL
-            || !(Gizmos.gizmoMap.get(e.getPlayer()) instanceof HeadlessHorsemanGizmo)
+        if(!(Gizmos.gizmoMap.get(e.getPlayer()) instanceof HeadlessHorsemanGizmo)
             || e.getItem() == null || e.getItem().getType() != this.getIcon()) return;
 
         final Player player = e.getPlayer();
