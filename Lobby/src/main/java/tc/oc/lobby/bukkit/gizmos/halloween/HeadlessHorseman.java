@@ -51,6 +51,7 @@ public class HeadlessHorseman {
     public void restore() {
         headlessHorse.despawn();
         viewer.getInventory().armor().clear();
+        viewer.getInventory().setChestplate(new ItemStack(Material.ELYTRA));
         viewer.playSound(viewer.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1f, 1f);
     }
 
