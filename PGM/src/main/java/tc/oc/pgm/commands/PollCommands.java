@@ -225,8 +225,13 @@ public class PollCommands implements Commands {
                 throw new CommandException("Another poll is already running.");
             }
             pollManager.startPoll(poll);
-            Bukkit.getServer().broadcastMessage(Poll.boldAqua + poll.getInitiator() + Poll.normalize + " has started a poll " + poll.getDescriptionMessage());
-            Bukkit.broadcastMessage(Poll.tutorialMessage());
+
+            if (Bukkit.getPlayer(poll.getInitiator()) != null) {
+                for(Player viewer : Bukkit.getOnlinePlayers()) {
+                    viewer.sendMessage(Poll.boldAqua + poll.getInitiator() + Poll.normalize + " has started a poll " + poll.getDescriptionMessage());
+                    Bukkit.broadcastMessage(Poll.tutorialMessage());
+                }
+            }
         }
     }
 }
