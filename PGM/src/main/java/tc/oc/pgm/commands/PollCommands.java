@@ -6,6 +6,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
+import java.util.function.Function;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -225,7 +226,13 @@ public class PollCommands implements Commands {
                 throw new CommandException("Another poll is already running.");
             }
             pollManager.startPoll(poll);
-            Bukkit.getServer().broadcastMessage(Poll.boldAqua + poll.getInitiator() + Poll.normalize + " has started a poll " + poll.getDescriptionMessage());
+
+            Player initiator = Bukkit.getPlayer(poll.getInitiator());
+            if (initiator != null) {
+                for(Player viewer : Bukkit.getOnlinePlayers()) {
+                    viewer.sendMessage(Poll.boldAqua + poll.getInitiator() + Poll.normalize + " has started a poll " + poll.getDescriptionMessage());
+                }
+            }
             Bukkit.broadcastMessage(Poll.tutorialMessage());
         }
     }
