@@ -69,6 +69,7 @@ public class Alive extends Participating {
         player.setVisible(true);
         player.refreshVisibility();
         bukkit.setGameMode(GameMode.SURVIVAL);
+        bukkit.setGravity(true);
 
         // Apply spawn kit
         for(Kit kit : smm.getPlayerKits()) {
@@ -164,7 +165,7 @@ public class Alive extends Participating {
 
         playDeathEffect(killer);
 
-        transition(new Dead(player));
+        transition(new Dead(player, killer));
     }
 
     private void playDeathEffect(@Nullable ParticipantState killer) {

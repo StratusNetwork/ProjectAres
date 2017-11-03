@@ -15,6 +15,7 @@ import tc.oc.pgm.events.MatchPlayerDeathEvent;
 import tc.oc.pgm.events.MatchScoreChangeEvent;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
 import tc.oc.pgm.flag.event.FlagCaptureEvent;
+import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.match.MatchUserFacet;
 import tc.oc.pgm.match.ParticipantState;
 import tc.oc.pgm.match.inject.ForMatchUser;
@@ -27,7 +28,7 @@ import java.util.*;
 public class StatsUserFacet implements MatchUserFacet, Listener {
 
     private final UUID player;
-    private int lifeKills, teamKills, matchKills, deaths;
+    private int lifeKills, teamKills, matchKills, teammatesKilled, deaths;
     private List<Long> woolCaptureTimes;
     private Map<Core, Long> coreTouchTimes;
     private List<Long> coreLeakTimes;
@@ -66,6 +67,13 @@ public class StatsUserFacet implements MatchUserFacet, Listener {
      */
     public int matchKills() {
         return matchKills;
+    }
+
+    /**
+     * Get the amount of kills this player got in the whole match.
+     */
+    public int teammatesKilled() {
+        return teammatesKilled;
     }
 
     /**
@@ -110,6 +118,8 @@ public class StatsUserFacet implements MatchUserFacet, Listener {
             ++lifeKills;
             ++teamKills;
             ++matchKills;
+        } else if (killer != null && killer.getUniqueId().equals(player) && event.isTeamKill()) {
+            ++teammatesKilled;
         }
     }
 
@@ -156,8 +166,11 @@ public class StatsUserFacet implements MatchUserFacet, Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onScoreEvent(final MatchScoreChangeEvent event) {
-        if (event.getPlayer().isPresent() && event.getPlayer().get().getUniqueId().equals(player)) {
-            pointsScored += event.getNewScore() - event.getOldScore();
+        Optional<MatchPlayer> matchPlayerOptional = event.getPlayer();
+        if (matchPlayerOptional != null) {
+            if (matchPlayerOptional.isPresent() && matchPlayerOptional.get().getUniqueId().equals(player)) {
+                pointsScored += event.getNewScore() - event.getOldScore();
+            }
         }
     }
 

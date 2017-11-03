@@ -11,19 +11,7 @@ import org.bukkit.Material;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.mutation.types.MutationModule;
-import tc.oc.pgm.mutation.types.kit.ArmorMutation;
-import tc.oc.pgm.mutation.types.kit.ElytraMutation;
-import tc.oc.pgm.mutation.types.kit.EnchantmentMutation;
-import tc.oc.pgm.mutation.types.kit.EquestrianMutation;
-import tc.oc.pgm.mutation.types.kit.ExplosiveMutation;
-import tc.oc.pgm.mutation.types.kit.GlowMutation;
-import tc.oc.pgm.mutation.types.kit.HardcoreMutation;
-import tc.oc.pgm.mutation.types.kit.HealthMutation;
-import tc.oc.pgm.mutation.types.kit.JumpMutation;
-import tc.oc.pgm.mutation.types.kit.MobsMutation;
-import tc.oc.pgm.mutation.types.kit.PotionMutation;
-import tc.oc.pgm.mutation.types.kit.ProjectileMutation;
-import tc.oc.pgm.mutation.types.kit.StealthMutation;
+import tc.oc.pgm.mutation.types.kit.*;
 import tc.oc.pgm.mutation.types.other.BlitzMutation;
 import tc.oc.pgm.mutation.types.other.RageMutation;
 import tc.oc.pgm.mutation.types.targetable.ApocalypseMutation;
@@ -51,6 +39,9 @@ public enum Mutation {
     MOBS       (MobsMutation.class,        Material.MONSTER_EGG),
     LIGHTNING  (LightningMutation.class,   Material.JACK_O_LANTERN),
     BOMBER     (BomberMutation.class,      Material.TNT),
+    BREAD      (BreadMutation.class,       Material.BREAD),
+    BOAT       (BoatMutation.class,        Material.BOAT, false),
+    TOOLS      (ToolsMutation.class,       Material.DIAMOND_PICKAXE),
     APOCALYPSE (ApocalypseMutation.class,  Material.NETHER_STAR);
 
     public static final String TYPE_KEY = "mutation.type.";

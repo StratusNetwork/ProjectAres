@@ -49,7 +49,7 @@ public class EquestrianMutation extends EntityMutation<AbstractHorse> {
     final static WeightedRandomChooser<Material, Integer> ARMOR = new ImmutableWeightedRandomChooser<>(ARMOR_MAP);
 
     public EquestrianMutation(Match match) {
-        super(match, false);
+        super(match, AbstractHorse.class, false);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class EquestrianMutation extends EntityMutation<AbstractHorse> {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if(playerByEntity(event.getEntity()).flatMap(MatchPlayer::competitor)
-                                            .equals(match().participant(event.getDamager()).flatMap(MatchPlayer::competitor))) {
+                .equals(match().participant(event.getDamager()).flatMap(MatchPlayer::competitor))) {
             event.setCancelled(true);
         }
     }

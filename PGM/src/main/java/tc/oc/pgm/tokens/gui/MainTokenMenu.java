@@ -8,29 +8,16 @@ import tc.oc.commons.bukkit.util.Constants;
 import tc.oc.commons.bukkit.util.ItemCreator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import tc.oc.pgm.menu.gui.MainMenuInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainTokenMenu extends ChestInterface {
-    private static MainTokenMenu instance;
-
-    private Player player;
 
     public MainTokenMenu(Player player) {
-        super(player, new ArrayList<Button>(), 27, "Token Menu", getInstance());
-        this.player = player;
+        super(player, new ArrayList<Button>(), 36, "Token Menu");
         updateButtons();
-        instance = this;
-    }
-
-    @Override
-    public ChestInterface getParent() {
-        return getInstance();
-    }
-
-    public static MainTokenMenu getInstance() {
-        return instance;
     }
 
     @Override
@@ -75,6 +62,15 @@ public class MainTokenMenu extends ChestInterface {
             @Override
             public void function(Player player) {
                 player.openInventory(new TokenPurchaseInterface(player).getInventory());
+            }
+        });
+
+        buttons.add(new Button(new ItemCreator(Material.WOOL)
+                .setData(14)
+                .setName( ChatColor.GREEN + "Cancel" ), 31){
+            @Override
+            public void function(Player player) {
+                player.openInventory(new MainMenuInterface(player).getInventory());
             }
         });
 

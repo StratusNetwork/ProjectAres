@@ -23,7 +23,7 @@ public class BomberMutation extends EntityMutation<TNTPrimed> implements TargetM
     Instant next;
 
     public BomberMutation(Match match) {
-        super(match, false);
+        super(match, TNTPrimed.class, false);
     }
 
     @Override
@@ -38,11 +38,11 @@ public class BomberMutation extends EntityMutation<TNTPrimed> implements TargetM
                 tnt.setIsIncendiary(false);
                 tnt.setFuseTicks(200);
                 tnt.setVelocity(
-                    new Vector(
-                        (random().nextBoolean() ? .5 : -.5) * entropy().randomDouble(),
-                        -entropy().randomDouble(),
-                        (random().nextBoolean() ? .5 : -.5) * entropy().randomDouble()
-                    )
+                        new Vector(
+                                (random().nextBoolean() ? .5 : -.5) * entropy().randomDouble(),
+                                -entropy().randomDouble(),
+                                (random().nextBoolean() ? .5 : -.5) * entropy().randomDouble()
+                        )
                 );
             }
         });

@@ -7,23 +7,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class MainTokenButton extends Button {
-    private static MainTokenButton instance;
 
     public MainTokenButton() {
-        super(null);
-        instance = this;
-    }
-
-    public static MainTokenButton getInstance() {
-        return instance;
+        super(13);
     }
 
     @Override
     public ItemCreator getIcon() {
         return new ItemCreator(Material.DOUBLE_PLANT)
-                .setName(Constants.PREFIX + "Tokens")
-                .addLore(Constants.SUBTEXT + "Open the Token Menu",
-                        Constants.CLICK + "Right Click");
+                .setName(Constants.PREFIX + "Tokens");
     }
 
     @Override
