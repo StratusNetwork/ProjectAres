@@ -177,7 +177,7 @@ public abstract class TouchableGoal<T extends ProximityGoalDefinition> extends P
                !isCompleted(team) &&
                hasTouched(team) &&
                (team == viewer || showEnemyTouches() || viewer.isObservingType() 
-                   || getMatch().needMatchModule(VictoryMatchModule.class).checkMatchEnd());
+                   || getMatch().isFinished());
     }
 
     protected void sendTouchMessage(@Nullable ParticipantState toucher, boolean includeToucher) {
