@@ -198,10 +198,10 @@ public class TicketBooth {
 
         final PlayerId playerId = userStore.playerId(player);
         final Game game = currentGame(playerId);
-        //if(game == null) {
-        //    audience.sendMessage(gameFormatter.notPlaying());
-        //    return;
-        //}
+        if(game == null) {
+            //audience.sendMessage(gameFormatter.notPlaying());
+            return;
+        }
         if(game != null) {
             syncExecutor.callback(
                 sendPlayRequest(playerId, null),
