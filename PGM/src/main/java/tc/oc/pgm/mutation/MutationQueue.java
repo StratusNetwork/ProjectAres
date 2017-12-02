@@ -34,6 +34,13 @@ public class MutationQueue {
     public ListenableFuture<Server> clear() {
         return force(Collections.emptyList());
     }
+    
+    public boolean isEmpty() {
+        return minecraftService
+            .getLocalServer()
+            .queued_mutations()
+            .isEmpty();
+    }
 
     public ListenableFuture<Server> removeAll(final Collection<Mutation> mutations) {
         Collection<Mutation> removed = mutations();
