@@ -40,6 +40,9 @@ public class DynamicRotationListener implements PluginFacet, Listener {
 
         // Ignore if dynamic rotations are disabled or if there is only one rotation available
         if (!config.getBoolean("dynamic", false) || rotationManager.getRotations().size() <= 1) return;
+        
+        // If a mutation was set for the next map, don't change it yet.
+        if (!MutationCommands.getInstance().getMutationQueue().isEmpty()) return;
 
         int playerCount = players.count() + Math.round(event.getMatch().getObservingPlayers().size() / 2);
 
