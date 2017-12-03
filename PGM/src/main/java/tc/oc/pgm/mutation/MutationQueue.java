@@ -36,10 +36,7 @@ public class MutationQueue {
     }
     
     public boolean isEmpty() {
-        return minecraftService
-            .getLocalServer()
-            .queued_mutations()
-            .isEmpty();
+        return minecraftService.getLocalServer().queued_mutations().isEmpty();
     }
 
     public ListenableFuture<Server> removeAll(final Collection<Mutation> mutations) {
