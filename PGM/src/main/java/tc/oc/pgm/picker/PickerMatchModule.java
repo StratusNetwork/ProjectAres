@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerLocaleChangeEvent;
@@ -40,6 +39,7 @@ import tc.oc.commons.core.chat.ChatUtils;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.formatting.StringUtils;
 import tc.oc.pgm.PGMTranslations;
+import tc.oc.pgm.autojoin.AutoJoinMatchModule;
 import tc.oc.pgm.blitz.BlitzEvent;
 import tc.oc.pgm.classes.ClassMatchModule;
 import tc.oc.pgm.classes.ClassModule;
@@ -96,15 +96,22 @@ public class PickerMatchModule extends MatchModule implements Listener {
     private final ComponentRenderContext renderer;
     private final JoinMatchModule jmm;
     private final BlitzMatchModule bmm;
+    private final AutoJoinMatchModule autoJoinMatchModule;
     private final boolean hasTeams;
     private final boolean hasClasses;
 
     private final Set<MatchPlayer> picking = new HashSet<>();
 
-    @Inject PickerMatchModule(ComponentRenderContext renderer, JoinMatchModule jmm, BlitzMatchModule bmm, Optional<TeamModule> teamModule, Optional<ClassModule> classModule) {
+    @Inject PickerMatchModule(ComponentRenderContext renderer,
+                              JoinMatchModule jmm,
+                              BlitzMatchModule bmm,
+                              AutoJoinMatchModule autoJoinMatchModule,
+                              Optional<TeamModule> teamModule,
+                              Optional<ClassModule> classModule) {
         this.renderer = renderer;
         this.jmm = jmm;
         this.bmm = bmm;
+        this.autoJoinMatchModule = autoJoinMatchModule;
         this.hasTeams = teamModule.isPresent();
         this.hasClasses = classModule.isPresent();
     }
@@ -288,11 +295,8 @@ public class PickerMatchModule extends MatchModule implements Listener {
     }
 
     @EventHandler
-    public void rightClickIcon(final ObserverInteractEvent event) {
-        if(event.getClickType() != ClickType.RIGHT) return;
-
+    public void handleClickIcon(final ObserverInteractEvent event) {
         MatchPlayer player = event.getPlayer();
-        if(!canUse(player)) return;
 
         ItemStack hand = event.getClickedItem();
         if(ItemUtils.isNothing(hand)) return;
@@ -300,17 +304,34 @@ public class PickerMatchModule extends MatchModule implements Listener {
         String displayName = hand.getItemMeta().getDisplayName();
         if(displayName == null) return;
 
-        if(hand.getType() == Button.JOIN.material) {
-            event.setCancelled(true);
-            if(canOpenWindow(player)) {
-                showWindow(player);
-            } else {
-                // If there is nothing to pick, just join immediately
-                jmm.requestJoin(player, JoinRequest.user());
-            }
-        } else if(hand.getType() == Button.LEAVE.material) {
-            event.setCancelled(true);
-            jmm.requestObserve(player);
+        if(hand.getType() != Button.JOIN.material) return;
+
+        switch(event.getClickType()) {
+            // Autojoin feature - Player left clicks the hat(cancels Autojoin)
+            case LEFT:
+                if(autoJoinMatchModule.shouldAutoJoin(player)) {
+                    autoJoinMatchModule.cancelAutojoin(player);
+                }
+                player.sendHotbarMessage(new Component(ChatColor.DARK_PURPLE).translate("autojoin.cancelled").bold(true));
+                break;
+            case RIGHT:
+                if(!canUse(player)) return;
+
+                if(hand.getType() == Button.JOIN.material) {
+                    event.setCancelled(true);
+                    if(canOpenWindow(player)) {
+                    showWindow(player);
+                    } else {
+                        // If there is nothing to pick, just join immediately
+                        jmm.requestJoin(player, JoinRequest.user());
+                    }
+
+                //} else if(hand.getType() == Button.LEAVE.material) {
+                //    event.setCancelled(true);
+                //    jmm.requestObserve(player);
+                //
+                }
+                break;
         }
     }
 
