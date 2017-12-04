@@ -9,6 +9,5 @@ public class AutoJoinManifest extends HybridManifest {
     protected void configure() {
         new SettingBinder(publicBinder()).addBinding().toInstance(AutoJoinSetting.get());
         install(new MatchModuleFixtureManifest<AutoJoinMatchModule>(){});
-        
     }
 }

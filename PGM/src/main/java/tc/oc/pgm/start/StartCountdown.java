@@ -85,11 +85,11 @@ public class StartCountdown extends PreMatchCountdown {
         }
 
         if(remaining.getSeconds() >= 1 && remaining.getSeconds() <= 3) {
+            autoJoinMatchModule.enterAllPlayers();
             // Auto-balance runs at match start as well, but try to run it a few seconds in advance
             if(this.tmm != null && !this.autoBalanced) {
                 this.autoBalanced = true;
                 this.tmm.balanceTeams();
-                autoJoinMatchModule.enterAllPlayers();
             }
         }
 
