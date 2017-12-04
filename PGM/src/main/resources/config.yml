@@ -197,6 +197,8 @@ fishing:
 scoreboard:
   show-proximity: false
   precise-progress: false
+  show-ip: true
+  network-ip: stratus.network
 
 wool:
   auto-refill: true
