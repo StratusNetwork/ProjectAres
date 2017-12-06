@@ -15,7 +15,6 @@ import tc.oc.pgm.match.MatchModule;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.match.MatchScope;
 
-
 import javax.inject.Inject;
 
 /**
