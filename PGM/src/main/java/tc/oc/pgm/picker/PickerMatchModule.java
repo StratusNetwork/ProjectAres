@@ -325,7 +325,7 @@ public class PickerMatchModule extends MatchModule implements Listener {
                         // If there is nothing to pick, just join immediately
                         jmm.requestJoin(player, JoinRequest.user());
                     }
-
+                // Removed until this has some use - currently does nothing
                 //} else if(hand.getType() == Button.LEAVE.material) {
                 //    event.setCancelled(true);
                 //    jmm.requestObserve(player);
