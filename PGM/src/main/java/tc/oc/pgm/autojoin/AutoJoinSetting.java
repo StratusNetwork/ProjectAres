@@ -7,7 +7,7 @@ import me.anxuiz.settings.types.BooleanType;
 public class AutoJoinSetting {
     private static final Setting INSTANCE = new SettingBuilder()
         .name("AutoJoin").alias("aj")
-        .summary("Toggles the ability to be automatically emplaced into the match")
+        .summary("Automatically join a team when the match starts")
         .type(new BooleanType())
         .defaultValue(true)
         .get();
