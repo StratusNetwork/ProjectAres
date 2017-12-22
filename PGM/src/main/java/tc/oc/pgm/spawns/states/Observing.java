@@ -121,10 +121,8 @@ public class Observing extends State {
     public void onEvent(CoarsePlayerMoveEvent event) {
         // Don't let observers fall into the void
         if(event.getFrom().getY() >= VOID_HEIGHT && event.getTo().getY() < VOID_HEIGHT) {
-            event.setCancelled(true);
-            if(event.getPlayer().getAllowFlight()) {
-                event.getPlayer().setFlying(true);
-            }
+            match.player(event.getPlayer())
+                 .ifPresent(player -> player.getBukkit().teleport(smm.getDefaultSpawn().getSpawn(player)));
         }
     }
 }
