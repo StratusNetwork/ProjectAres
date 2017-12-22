@@ -35,6 +35,7 @@ import tc.oc.pgm.match.MatchManifest;
 import tc.oc.pgm.match.MatchPlayerEventRouter;
 import tc.oc.pgm.module.MatchModulesManifest;
 import tc.oc.pgm.mutation.command.MutationCommands;
+import tc.oc.pgm.mutation.types.kit.TeamChestMutation;
 import tc.oc.pgm.restart.RestartListener;
 import tc.oc.pgm.rotation.DynamicRotationListener;
 import tc.oc.pgm.settings.Settings;
@@ -104,5 +105,6 @@ public final class PGMManifest extends HybridManifest {
 
         requestStaticInjection(State.class);
         requestStaticInjection(PollCommands.class);
+        requestStaticInjection(TeamChestMutation.class);
     }
 }
