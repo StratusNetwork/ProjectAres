@@ -29,7 +29,7 @@ import tc.oc.pgm.commands.CommandUtils;
 
 @Singleton
 public class ObjectiveModeCommands implements NestedCommands {
-    public static Permission ADVANCE_PERMISSION = new Permission("pgm.modes.advance");
+    public static final String ADVANCE_PERMISSION = "pgm.modes.advance";
 
     @Singleton
     public static class Parent implements Commands {
@@ -80,10 +80,10 @@ public class ObjectiveModeCommands implements NestedCommands {
         final ObjectiveModeManager manager = this.manager.get();
         final Audience audience = audiences.get(sender);
         final Optional<Pair<ObjectiveMode, Duration>> next = manager.nextMode();
-        final boolean advance = args.hasFlag('f');
+
         if(!next.isPresent()) sendNoModes(audience);
 
-        if(advance && sender.hasPermission(ADVANCE_PERMISSION)) {
+        if(args.hasFlag('f') && sender.hasPermission(ADVANCE_PERMISSION)) {
             if(!CommandUtils.getMatch(sender).hasStarted()) {
                 throw new TranslatableCommandException("command.modes.advance.matchNotStarted");
             }
