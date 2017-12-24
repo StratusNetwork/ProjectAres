@@ -156,7 +156,7 @@ public class LocalServerDocument extends StartupServerDocument implements Server
 
     @Override
     public String domain() {
-        return "us.stratus.network";
+        return "play.stratus.network";
     }
 
     @Override
