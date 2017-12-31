@@ -2,6 +2,7 @@ package tc.oc.pgm;
 
 import tc.oc.commons.core.inject.HybridManifest;
 import tc.oc.pgm.animation.AnimationManifest;
+import tc.oc.pgm.autojoin.AutoJoinManifest;
 import tc.oc.pgm.broadcast.BroadcastManifest;
 import tc.oc.pgm.classes.ClassManifest;
 import tc.oc.pgm.control.ControllableGoalManifest;
@@ -43,6 +44,7 @@ import tc.oc.pgm.wool.WoolManifest;
 public class PGMModulesManifest extends HybridManifest {
     @Override
     protected void configure() {
+        install(new AutoJoinManifest());
         install(new FilterManifest());
         install(new RegionManifest());
         install(new KitManifest());

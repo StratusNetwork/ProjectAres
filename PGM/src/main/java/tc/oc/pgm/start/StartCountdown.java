@@ -2,6 +2,7 @@ package tc.oc.pgm.start;
 
 import java.time.Duration;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -10,6 +11,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.util.Comparables;
+import tc.oc.pgm.autojoin.AutoJoinMatchModule;
 import tc.oc.pgm.match.Match;
 import tc.oc.pgm.match.MatchState;
 import tc.oc.pgm.teams.Team;
@@ -28,6 +30,7 @@ public class StartCountdown extends PreMatchCountdown {
     // or implementing some kind of countdown listener system.
     private final @Nullable TeamMatchModule tmm;
     private final StartMatchModule smm;
+    private final AutoJoinMatchModule autoJoinMatchModule;
     private final Duration huddle;
     private boolean autoBalanced, balanceWarningSent;
     protected final boolean forced;
@@ -38,6 +41,7 @@ public class StartCountdown extends PreMatchCountdown {
         this.forced = forced;
         this.smm = match.needMatchModule(StartMatchModule.class);
         this.tmm = match.getMatchModule(TeamMatchModule.class);
+        this.autoJoinMatchModule = match.needMatchModule(AutoJoinMatchModule.class);
     }
 
     protected boolean willHuddle() {
@@ -73,7 +77,15 @@ public class StartCountdown extends PreMatchCountdown {
     public void onTick(Duration remaining, Duration total) {
         super.onTick(remaining, total);
 
+        if(remaining.getSeconds() <= 10) {
+            // Autojoin feature - Send the player hotbar messages and alert them that match is starting
+            autoJoinMatchModule.joiningPlayers()
+                .forEach(player -> player.sendHotbarMessage(new Component(ChatColor.DARK_PURPLE).translate("autojoin.starting",
+                    String.valueOf(remaining.getSeconds())).bold(true)));
+        }
+
         if(remaining.getSeconds() >= 1 && remaining.getSeconds() <= 3) {
+            autoJoinMatchModule.enterAllPlayers();
             // Auto-balance runs at match start as well, but try to run it a few seconds in advance
             if(this.tmm != null && !this.autoBalanced) {
                 this.autoBalanced = true;
