@@ -670,6 +670,7 @@ public class Payload extends OwnedGoal<PayloadDefinition> {
         this.payloadEntity.setGravity(false);
         this.payloadEntity.setMaxSpeed(0);
         this.payloadEntity.setSlowWhenEmpty(true);
+        this.payloadEntity.setGlowing(true);
 
         //Summon a label for it
         this.labelEntity = this.payloadLocation.getWorld().spawn(this.payloadLocation.clone().add(0, 1, 0), ArmorStand.class);
