@@ -20,10 +20,7 @@ import tc.oc.inject.ProtectedBinder;
 import tc.oc.minecraft.logging.BetterRaven;
 import tc.oc.pgm.antigrief.CraftingProtect;
 import tc.oc.pgm.channels.ChannelCommands;
-import tc.oc.pgm.commands.MapCommands;
 import tc.oc.pgm.commands.PollCommands;
-import tc.oc.pgm.commands.RotationControlCommands;
-import tc.oc.pgm.commands.RotationEditCommands;
 import tc.oc.pgm.events.ConfigLoadEvent;
 import tc.oc.pgm.ffa.FreeForAllCommands;
 import tc.oc.pgm.fireworks.ObjectivesFireworkListener;
@@ -194,11 +191,8 @@ public final class PGM extends JavaPlugin {
     }
 
     private void setupCommands() {
-        commands.register(MapCommands.class);
         commands.register(ChannelCommands.class);
         commands.register(PollCommands.class);
-        commands.register(RotationEditCommands.RotationEditParent.class);
-        commands.register(RotationControlCommands.RotationControlParent.class);
         commands.register(TimeLimitCommands.class);
         commands.register(MapRatingsCommands.class);
         commands.register(GoalCommands.class);

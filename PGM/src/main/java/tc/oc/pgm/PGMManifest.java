@@ -6,15 +6,13 @@ import tc.oc.commons.bukkit.flairs.FlairRenderer;
 import tc.oc.commons.bukkit.nick.UsernameRenderer;
 import tc.oc.commons.core.inject.HybridManifest;
 import tc.oc.commons.core.plugin.PluginFacetBinder;
-import tc.oc.minecraft.api.event.ListenerBinder;
 import tc.oc.pgm.analytics.MatchAnalyticsManifest;
 import tc.oc.pgm.antigrief.DefuseListener;
 import tc.oc.pgm.chat.MatchFlairRenderer;
 import tc.oc.pgm.chat.MatchNameInvalidator;
 import tc.oc.pgm.chat.MatchUsernameRenderer;
-import tc.oc.pgm.commands.AdminCommands;
+import tc.oc.pgm.commands.CommandManifest;
 import tc.oc.pgm.commands.CommandUtils;
-import tc.oc.pgm.commands.MatchCommands;
 import tc.oc.pgm.commands.PollCommands;
 import tc.oc.pgm.debug.PGMLeakListener;
 import tc.oc.pgm.development.MapDevelopmentCommands;
@@ -39,7 +37,7 @@ import tc.oc.pgm.match.MatchPlayerEventRouter;
 import tc.oc.pgm.module.MatchModulesManifest;
 import tc.oc.pgm.mutation.command.MutationCommands;
 import tc.oc.pgm.restart.RestartListener;
-import tc.oc.pgm.rotation.DynamicRotationListener;
+import tc.oc.pgm.rotation.RotationManifest;
 import tc.oc.pgm.settings.Settings;
 import tc.oc.pgm.spawns.states.State;
 import tc.oc.pgm.tablist.MatchFooterTabEntry;
@@ -67,13 +65,16 @@ public final class PGMManifest extends HybridManifest {
 
         install(new ListingManifest());
 
+        install(new CommandManifest());
+
+        install(new RotationManifest());
+
         bind(MatchManager.class);
         bind(MatchLoader.class);
         bind(MatchFinder.class).to(MatchLoader.class);
 
         bind(MapLibrary.class).to(MapLibraryImpl.class);
         bind(MapLoader.class).to(MapLoaderImpl.class);
-        new ListenerBinder(binder()).bindListener().to(DynamicRotationListener.class);
 
         // Tourney needs this
         expose(MapLibrary.class);
@@ -84,13 +85,11 @@ public final class PGMManifest extends HybridManifest {
         bindAndExpose(FlairRenderer.class).to(MatchFlairRenderer.class);
 
         final PluginFacetBinder facets = new PluginFacetBinder(binder());
-        facets.register(AdminCommands.class);
         facets.register(PollCommands.class);
         facets.register(MatchNameInvalidator.class);
         facets.register(MapDevelopmentCommands.class);
         facets.register(MapErrorTracker.class);
         facets.register(MatchAnnouncer.class);
-        facets.register(MatchCommands.class);
         facets.register(MutationCommands.class);
         facets.register(MutationCommands.Parent.class);
         facets.register(PGMLeakListener.class);

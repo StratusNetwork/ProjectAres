@@ -36,7 +36,6 @@ import tc.oc.commons.core.chat.Audience;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.chat.Components;
 import tc.oc.commons.core.commands.CommandFutureCallback;
-import tc.oc.commons.core.commands.Commands;
 import tc.oc.commons.core.concurrent.Flexecutor;
 import tc.oc.minecraft.scheduler.Sync;
 import tc.oc.pgm.PGM;
@@ -52,7 +51,7 @@ import tc.oc.pgm.rotation.RotationProviderInfo;
 import tc.oc.pgm.rotation.RotationState;
 import tc.oc.pgm.teams.TeamFactory;
 
-public class MapCommands implements Commands {
+public class MapCommands {
     private final UserFinder userFinder;
     private final Flexecutor executor;
     private final IdentityProvider identityProvider;
@@ -300,12 +299,12 @@ public class MapCommands implements Commands {
         max = 1
     )
     @CommandPermissions("pgm.rotation.view")
-    public static void rotation(CommandContext args, final CommandSender sender) throws CommandException {
+    public void rotation(CommandContext args, final CommandSender sender) throws CommandException {
         final RotationState rotation = CommandUtils.getRotation(args.getFlag('n'), sender);
         int page = args.getInteger(0, 1);
 
         String header = PGMTranslations.get().t("command.map.currentRotation.title", sender);
-        String name = PGM.getMatchManager().getRotationManager().getCurrentRotationName();
+        String name = matchManager.getRotationManager().getCurrentRotationName();
         if(!name.equalsIgnoreCase("default")) {
             header += " (" + ChatColor.DARK_AQUA + name + ChatColor.RESET + ")";
         }
@@ -327,8 +326,8 @@ public class MapCommands implements Commands {
         max = 0
     )
     @CommandPermissions("pgm.rotation.list")
-    public static void rotations(final CommandContext args, final CommandSender sender) throws CommandException {
-        RotationManager manager = PGM.getMatchManager().getRotationManager();
+    public void rotations(final CommandContext args, final CommandSender sender) throws CommandException {
+        RotationManager manager = matchManager.getRotationManager();
         List<RotationProviderInfo> rotations = manager.getProviders();
         int page = args.getFlagInteger('p', 1);
 

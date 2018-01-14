@@ -14,10 +14,9 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.command.CommandSender;
 import java.time.Duration;
 import tc.oc.api.docs.virtual.ServerDoc;
+import tc.oc.commons.bukkit.chat.Audiences;
 import tc.oc.commons.core.chat.Audience;
-import tc.oc.commons.core.chat.Audiences;
 import tc.oc.commons.core.chat.Component;
-import tc.oc.commons.core.commands.Commands;
 import tc.oc.commons.core.commands.TranslatableCommandException;
 import tc.oc.commons.core.restart.RestartManager;
 import tc.oc.commons.core.util.TimeUtils;
@@ -36,7 +35,7 @@ import tc.oc.pgm.victory.VictoryMatchModule;
 import tc.oc.pgm.rotation.RotationManager;
 import tc.oc.pgm.rotation.RotationState;
 
-public class AdminCommands implements Commands {
+public class AdminCommands {
     
     private final RestartManager restartManager;
     private final RestartListener restartListener;
@@ -94,9 +93,9 @@ public class AdminCommands implements Commands {
             audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr.match-count-disabled"));
         } else if(matches > 0) {
             restartManager.cancelRestart();
-            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr-restart-in-matches"));
+            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr.restart-in-matches", matches));
         } else if(matches == 0) {
-            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr-restart-after-match"));
+            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr.restart-after-match"));
         }
     }
 
@@ -169,8 +168,10 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.cancel")
     public void cancel(CommandContext args, CommandSender sender) throws CommandException {
+        final Audience audience = audiences.get(sender);
+
         CommandUtils.getMatch(sender).countdowns().cancelAll(true);
-        sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.cancel.success"));
+        audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.cancel.success"));
     }
 
     @Command(
@@ -182,26 +183,26 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.skip")
     public void skip(CommandContext args, CommandSender sender) throws CommandException {
+        final Audience audience = audiences.get(sender);
         RotationManager manager = matchManager.getRotationManager();
         RotationState rotation = manager.getRotation();
 
         if(args.argsLength() > 0) {
             int n = args.getInteger(0, 1);
             rotation = rotation.skip(n);
-            // ChatColor.GREEN + PGMTranslations.get().t("command.admin.skip.successMultiple", sender, PGMTranslations.get().t(n == 1 ? "maps.singularCompound" : "maps.pluralCompound", sender, n),
-            // rotation.getNext().getInfo().getShortDescription(sender) + ChatColor.GREEN
+
             BaseComponent compound = n == 1 ? new Component("maps.singularCompund")
                                             : new TranslatableComponent("maps.pluralCompound", String.valueOf(n));
             // TODO: rewrite MapInfo to return Components
             BaseComponent nextMapDescription = new Component(rotation.getNext().getInfo().getShortDescription(sender));
-            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.successMultiple", compound, nextMapDescription));
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.successMultiple", compound, nextMapDescription));
 
         } else {
             PGMMap skippedMap = rotation.getNext();
             rotation = rotation.skip(1);
             // TODO: rewrite
             BaseComponent skippedMapDescription = new Component(skippedMap.getInfo().getShortDescription(sender));
-            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.success", skippedMapDescription));
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.success", skippedMapDescription));
         }
 
         manager.setRotation(rotation);
@@ -216,6 +217,7 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.skip")
     public void skipto(CommandContext args, CommandSender sender) throws CommandException {
+        final Audience audience = audiences.get(sender);
         RotationManager manager = matchManager.getRotationManager();
         RotationState rotation = manager.getRotation();
 
@@ -225,7 +227,7 @@ public class AdminCommands implements Commands {
             manager.setRotation(rotation);
             // TODO: rewrite
             BaseComponent nextMapDescription = new Component(rotation.getNext().getInfo().getShortDescription(sender));
-            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skipto.success", nextMapDescription));
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skipto.success", nextMapDescription));
         } else {
             throw new TranslatableCommandException("command.admin.skipto.invalidPoint");
         }
@@ -240,9 +242,10 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.reload")
     public void pgm(CommandContext args, CommandSender sender) throws CommandException {
+        final Audience audience = audiences.get(sender);
         pgm.reloadConfig();
 
-        sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.pgm"));
+        audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.pgm"));
     }
 
     @Command(
