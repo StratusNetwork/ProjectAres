@@ -1,21 +1,21 @@
 package tc.oc.pgm.map;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterables;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.Difficulty;
 import org.bukkit.World.Environment;
-import org.bukkit.command.CommandSender;
 import tc.oc.api.docs.PlayerId;
 import tc.oc.api.docs.SemanticVersion;
 import tc.oc.api.docs.virtual.MapDoc;
-import tc.oc.commons.bukkit.localization.Translations;
+import tc.oc.commons.bukkit.chat.ListComponent;
+import tc.oc.commons.bukkit.chat.NameStyle;
 import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.chat.Components;
 import tc.oc.commons.core.formatting.StringUtils;
@@ -102,37 +102,30 @@ public class MapInfo implements Comparable<MapInfo> {
     public MapDoc.Edition edition() { return id.edition(); }
     public MapDoc.Phase phase() { return id.phase(); }
 
-    public String getFormattedMapTitle() {
-        return StringUtils.dashedChatMessage(DARK_AQUA + " " + this.name + GRAY + " " + version, "-", RED + "" + STRIKETHROUGH);
+    public BaseComponent getFormattedMapTitle() {
+        return new Component(StringUtils.dashedChatMessage(DARK_AQUA + " " + this.name + GRAY + " " + version, "-", RED + "" + STRIKETHROUGH));
     }
 
-    public String getShortDescription(CommandSender sender) {
-        String text = GOLD + this.name;
+    public BaseComponent getShortDescription() {
+        BaseComponent componentedName = new Component(name).color(GOLD);
 
         List<Contributor> authors = getNamedAuthors();
         if(!authors.isEmpty()) {
-            text = Translations.get().t(
-                DARK_PURPLE.toString(),
-                "misc.authorship",
-                sender,
-                text,
-                Translations.get().legacyList(
-                    sender,
-                    DARK_PURPLE.toString(),
-                    RED.toString(),
-                    authors
-                )
-            );
+            componentedName = new Component(DARK_PURPLE).translate("misc.authorship",
+                                                                    componentedName,
+                                                                    new ListComponent(Lists.transform(authors,
+                                                                        contributors -> contributors.getStyledName(NameStyle.MAPMAKER)
+                                                                    )));
         }
 
-        return text;
+        return componentedName;
     }
 
     /**
      * Apply standard formatting (aqua + bold) to the map name
      */
-    public String getColoredName() {
-        return AQUA.toString() + BOLD + this.name;
+    public BaseComponent getColoredName() {
+        return new Component(name).color(AQUA).bold(true);
     }
 
     public BaseComponent getComponentName() {
@@ -142,8 +135,8 @@ public class MapInfo implements Comparable<MapInfo> {
     /**
      * Apply standard formatting (aqua + bold) to the map version
      */
-    public String getColoredVersion() {
-        return DARK_AQUA.toString() + BOLD + version;
+    public BaseComponent getColoredVersion() {
+        return new Component(version.toString()).color(AQUA).bold(true);
     }
 
     public List<Contributor> getNamedAuthors() {

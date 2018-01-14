@@ -6,8 +6,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import tc.oc.api.util.Permissions;
@@ -15,6 +14,7 @@ import tc.oc.commons.bukkit.inject.BukkitPluginManifest;
 import tc.oc.commons.bukkit.inventory.Slot;
 import tc.oc.commons.bukkit.logging.MapdevLogger;
 import tc.oc.commons.bukkit.teleport.NavigatorInterface;
+import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.commands.CommandRegistry;
 import tc.oc.inject.ProtectedBinder;
 import tc.oc.minecraft.logging.BetterRaven;
@@ -34,7 +34,6 @@ import tc.oc.pgm.mapratings.MapRatingsCommands;
 import tc.oc.pgm.match.Match;
 import tc.oc.pgm.match.MatchLoader;
 import tc.oc.pgm.match.MatchManager;
-import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.menu.gui.SettingMenuHelper;
 import tc.oc.pgm.pollablemaps.PollableMaps;
 import tc.oc.pgm.polls.PollListener;
@@ -72,14 +71,6 @@ public final class PGM extends JavaPlugin {
 
     public static MatchManager getMatchManager() {
         return pgm == null ? null : pgm.matchManager;
-    }
-
-    public static MatchManager needMatchManager() {
-        MatchManager mm = getMatchManager();
-        if(mm == null) {
-            throw new IllegalStateException("PGMMatchManager is not available");
-        }
-        return mm;
     }
 
     public Logger getRootMapLogger() {
@@ -149,15 +140,9 @@ public final class PGM extends JavaPlugin {
 
         if(Config.Broadcast.periodic()) {
             // periodically notify people of what map they're playing
-            this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    Match match = matchLoader.get().getCurrentMatch();
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_PURPLE + PGMTranslations.get().t("broadcast.currentlyPlaying", Bukkit.getConsoleSender(), match.getMap().getInfo().getShortDescription(Bukkit.getConsoleSender()) + ChatColor.DARK_PURPLE));
-                    for (MatchPlayer player : match.getPlayers()) {
-                        player.sendMessage(ChatColor.DARK_PURPLE + PGMTranslations.t("broadcast.currentlyPlaying", player, match.getMap().getInfo().getShortDescription(player.getBukkit()) + ChatColor.DARK_PURPLE));
-                    }
-                }
+            this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+                Match match = matchLoader.get().getCurrentMatch();
+                match.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("broadcast.currentlyPlaying", match.getMap().getInfo().getShortDescription()));
             }, 20, Config.Broadcast.frequency() * 20);
         }
 

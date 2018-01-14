@@ -193,16 +193,16 @@ public class AdminCommands {
 
             BaseComponent compound = n == 1 ? new Component("maps.singularCompund")
                                             : new TranslatableComponent("maps.pluralCompound", String.valueOf(n));
-            // TODO: rewrite MapInfo to return Components
-            BaseComponent nextMapDescription = new Component(rotation.getNext().getInfo().getShortDescription(sender));
-            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.successMultiple", compound, nextMapDescription));
+
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.successMultiple",
+                compound,
+                rotation.getNext().getInfo().getShortDescription()));
 
         } else {
             PGMMap skippedMap = rotation.getNext();
             rotation = rotation.skip(1);
-            // TODO: rewrite
-            BaseComponent skippedMapDescription = new Component(skippedMap.getInfo().getShortDescription(sender));
-            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.success", skippedMapDescription));
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.success",
+                                                                          skippedMap.getInfo().getShortDescription()));
         }
 
         manager.setRotation(rotation);
@@ -225,9 +225,8 @@ public class AdminCommands {
         if(RotationState.isNextIdValid(rotation.getMaps(), newNextId)) {
             rotation = rotation.skipTo(newNextId);
             manager.setRotation(rotation);
-            // TODO: rewrite
-            BaseComponent nextMapDescription = new Component(rotation.getNext().getInfo().getShortDescription(sender));
-            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skipto.success", nextMapDescription));
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skipto.success",
+                                                                          rotation.getNext().getInfo().getShortDescription()));
         } else {
             throw new TranslatableCommandException("command.admin.skipto.invalidPoint");
         }

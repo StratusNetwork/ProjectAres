@@ -147,7 +147,7 @@ public class MapCommands {
         new PrettyPaginatedResult<PGMMap>(renderer.renderLegacy(title, sender)) {
             @Override
             public String format(PGMMap pgmMap, int i) {
-                return (i + 1) + ". " + pgmMap.getInfo().getShortDescription(sender);
+                return (i + 1) + ". " + pgmMap.getInfo().getShortDescription().toLegacyText();
             }
         }.display(new BukkitWrappedCommandSender(sender), maps, args.getInteger(0, 1) /*page*/);
     }
@@ -180,8 +180,7 @@ public class MapCommands {
         final InfoModule infoModule = map.getContext().needModule(InfoModule.class);
         final MapInfo mapInfo = infoModule.getMapInfo();
 
-        // TODO: refactor the method in MapInfo to return components instead
-        audience.sendMessage(new Component(mapInfo.getFormattedMapTitle()));
+        audience.sendMessage(mapInfo.getFormattedMapTitle());
 
         Set<MapDoc.Gamemode> gamemodes = infoModule.getGamemodes();
         if(gamemodes.size() == 1) {
@@ -312,7 +311,7 @@ public class MapCommands {
         new PrettyPaginatedResult<PGMMap>(header) {
             @Override public String format(PGMMap map, int index) {
                 ChatColor color = index == rotation.getNextId() ? ChatColor.DARK_AQUA : ChatColor.WHITE;
-                return color.toString() + (index + 1) + ". " + map.getInfo().getShortDescription(sender);
+                return color.toString() + (index + 1) + ". " + map.getInfo().getShortDescription().toLegacyText();
             }
         }.display(new BukkitWrappedCommandSender(sender), rotation.getMaps(), page);
     }
@@ -352,9 +351,10 @@ public class MapCommands {
     )
     @CommandPermissions("pgm.mapnext")
     public void mapnext(CommandContext args, CommandSender sender) throws CommandException {
+        final Audience audience = audiences.get(sender);
         PGMMap next = matchManager.getNextMap();
-        // TODO: Make this a component
-        sender.sendMessage(ChatColor.DARK_PURPLE + PGMTranslations.get().t("command.map.next.success", sender, next.getInfo().getShortDescription(sender) + ChatColor.DARK_PURPLE));
+        audience.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.map.next.success",
+                                                                            next.getInfo().getShortDescription()));
     }
 
     private static @Nullable BaseComponent formatContribution(Contributor contributor) {
