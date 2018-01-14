@@ -1,6 +1,5 @@
 package tc.oc.pgm.commands;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +16,6 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.command.CommandSender;
 import tc.oc.api.docs.User;
@@ -39,7 +37,8 @@ import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.chat.Components;
 import tc.oc.commons.core.commands.CommandFutureCallback;
 import tc.oc.commons.core.commands.Commands;
-import tc.oc.minecraft.scheduler.SyncExecutor;
+import tc.oc.commons.core.concurrent.Flexecutor;
+import tc.oc.minecraft.scheduler.Sync;
 import tc.oc.pgm.PGM;
 import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.ffa.FreeForAllModule;
@@ -54,14 +53,14 @@ import tc.oc.pgm.teams.TeamFactory;
 
 public class MapCommands implements Commands {
     private final UserFinder userFinder;
-    private final SyncExecutor syncExecutor;
+    private final Flexecutor executor;
     private final IdentityProvider identityProvider;
     private final ComponentRenderContext renderer;
 
-    @Inject MapCommands(UserFinder userFinder, IdentityProvider identityProvider, SyncExecutor syncExecutor, ComponentRenderContext renderer) {
+    @Inject MapCommands(UserFinder userFinder, IdentityProvider identityProvider, @Sync Flexecutor executor, ComponentRenderContext renderer) {
         this.userFinder = userFinder;
         this.identityProvider = identityProvider;
-        this.syncExecutor = syncExecutor;
+        this.executor = executor;
         this.renderer = renderer;
     }
 
@@ -80,7 +79,7 @@ public class MapCommands implements Commands {
         final MapDoc.Gamemode gamemode = parseGamemode(args.getFlag('g'));
         final String author = args.getFlag('a');
         if(args.getFlag('a') != null) {
-            syncExecutor.callback(
+            executor.callback(
                 userFinder.findUser(sender, author, UserFinder.Scope.ALL, UserFinder.Default.NULL),
                 CommandFutureCallback.onSuccess(sender, result -> {
                     BaseComponent displayMsg = gamemode != null ?
@@ -266,6 +265,7 @@ public class MapCommands implements Commands {
             audience.sendMessage(new Component(mapInfoLabel("command.map.mapInfo.source"), new Component(map.getSource().getPath().toString(), ChatColor.GOLD)));
         }
 
+        /*
         URL xmlLink = map.getFolder().getDescriptionFileUrl();
         if(xmlLink != null) {
             audience.sendMessage(new Component(
@@ -280,6 +280,7 @@ public class MapCommands implements Commands {
 
             ));
         }
+        */
 
         return null;
     }
