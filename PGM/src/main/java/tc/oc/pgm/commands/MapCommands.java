@@ -21,7 +21,7 @@ import org.bukkit.command.CommandSender;
 import tc.oc.api.docs.User;
 import tc.oc.api.docs.virtual.MapDoc;
 import tc.oc.api.util.Permissions;
-import tc.oc.commons.bukkit.chat.BukkitAudiences;
+import tc.oc.commons.bukkit.chat.Audiences;
 import tc.oc.commons.bukkit.chat.ComponentRenderContext;
 import tc.oc.commons.bukkit.chat.NameStyle;
 import tc.oc.commons.bukkit.chat.PlayerComponent;
@@ -45,6 +45,7 @@ import tc.oc.pgm.ffa.FreeForAllModule;
 import tc.oc.pgm.map.Contributor;
 import tc.oc.pgm.map.MapInfo;
 import tc.oc.pgm.map.PGMMap;
+import tc.oc.pgm.match.MatchManager;
 import tc.oc.pgm.modules.InfoModule;
 import tc.oc.pgm.rotation.RotationManager;
 import tc.oc.pgm.rotation.RotationProviderInfo;
@@ -56,12 +57,16 @@ public class MapCommands implements Commands {
     private final Flexecutor executor;
     private final IdentityProvider identityProvider;
     private final ComponentRenderContext renderer;
+    private final Audiences audiences;
+    private final MatchManager matchManager;
 
-    @Inject MapCommands(UserFinder userFinder, IdentityProvider identityProvider, @Sync Flexecutor executor, ComponentRenderContext renderer) {
+    @Inject MapCommands(UserFinder userFinder, @Sync Flexecutor executor, IdentityProvider identityProvider, ComponentRenderContext renderer, Audiences audiences, MatchManager matchManager) {
         this.userFinder = userFinder;
-        this.identityProvider = identityProvider;
         this.executor = executor;
+        this.identityProvider = identityProvider;
         this.renderer = renderer;
+        this.audiences = audiences;
+        this.matchManager = matchManager;
     }
 
     @Command(
@@ -161,11 +166,11 @@ public class MapCommands implements Commands {
         help = "Shows information about a map including objective, authors, rules, and more."
     )
     @CommandPermissions("pgm.mapinfo")
-    public static List<String> mapinfo(CommandContext args, CommandSender sender) throws CommandException {
+    public List<String> mapinfo(CommandContext args, CommandSender sender) throws CommandException {
         if(args.getSuggestionContext() != null) {
             return CommandUtils.completeMapName(args.getJoinedStrings(0));
         }
-        final Audience audience = BukkitAudiences.getAudience(sender);
+        final Audience audience = audiences.get(sender);
         final PGMMap map;
         if(args.argsLength() > 0) {
             map = CommandUtils.getMap(args.getJoinedStrings(0), sender);
@@ -176,7 +181,8 @@ public class MapCommands implements Commands {
         final InfoModule infoModule = map.getContext().needModule(InfoModule.class);
         final MapInfo mapInfo = infoModule.getMapInfo();
 
-        audience.sendMessage(mapInfo.getFormattedMapTitle());
+        // TODO: refactor the method in MapInfo to return components instead
+        audience.sendMessage(new Component(mapInfo.getFormattedMapTitle()));
 
         Set<MapDoc.Gamemode> gamemodes = infoModule.getGamemodes();
         if(gamemodes.size() == 1) {
@@ -346,8 +352,9 @@ public class MapCommands implements Commands {
         max = 0
     )
     @CommandPermissions("pgm.mapnext")
-    public static void mapnext(CommandContext args, CommandSender sender) throws CommandException {
-        PGMMap next = PGM.getMatchManager().getNextMap();
+    public void mapnext(CommandContext args, CommandSender sender) throws CommandException {
+        PGMMap next = matchManager.getNextMap();
+        // TODO: Make this a component
         sender.sendMessage(ChatColor.DARK_PURPLE + PGMTranslations.get().t("command.map.next.success", sender, next.getInfo().getShortDescription(sender) + ChatColor.DARK_PURPLE));
     }
 

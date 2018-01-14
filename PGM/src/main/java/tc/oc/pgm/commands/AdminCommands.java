@@ -8,16 +8,20 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Console;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.command.CommandSender;
 import java.time.Duration;
 import tc.oc.api.docs.virtual.ServerDoc;
+import tc.oc.commons.core.chat.Audience;
+import tc.oc.commons.core.chat.Audiences;
+import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.commands.Commands;
 import tc.oc.commons.core.commands.TranslatableCommandException;
 import tc.oc.commons.core.restart.RestartManager;
 import tc.oc.commons.core.util.TimeUtils;
 import tc.oc.pgm.PGM;
-import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.blitz.BlitzMatchModule;
 import tc.oc.pgm.blitz.BlitzMatchModuleImpl;
 import tc.oc.pgm.blitz.BlitzProperties;
@@ -36,10 +40,16 @@ public class AdminCommands implements Commands {
     
     private final RestartManager restartManager;
     private final RestartListener restartListener;
+    private final Audiences audiences;
+    private final MatchManager matchManager;
+    private final PGM pgm;
 
-    @Inject AdminCommands(RestartManager restartManager, RestartListener restartListener) {
+    @Inject AdminCommands(RestartManager restartManager, RestartListener restartListener, Audiences audiences, MatchManager matchManager, PGM pgm) {
         this.restartManager = restartManager;
         this.restartListener = restartListener;
+        this.audiences = audiences;
+        this.matchManager = matchManager;
+        this.pgm = pgm;
     }
 
     @Command(
@@ -60,7 +70,7 @@ public class AdminCommands implements Commands {
 
         final Match match = CommandUtils.getMatch(sender);
         if(!match.canAbort() && !args.hasFlag('f')) {
-            throw new CommandException(PGMTranslations.get().t("command.admin.restart.matchRunning", sender));
+            throw new TranslatableCommandException("command.admin.restart.matchRunning");
         }
 
         restartListener.queueRestart(match, countdown, "/restart command");
@@ -78,14 +88,15 @@ public class AdminCommands implements Commands {
     @Console
     public void postponeRestart(CommandContext args, CommandSender sender) throws CommandException {
         final Integer matches = restartListener.restartAfterMatches(CommandUtils.getMatch(sender), args.getInteger(0, 10));
+        final Audience audience = audiences.get(sender);
         if(matches == null) {
             restartManager.cancelRestart();
-            sender.sendMessage(ChatColor.RED + "Automatic match count restart disabled");
+            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr.match-count-disabled"));
         } else if(matches > 0) {
             restartManager.cancelRestart();
-            sender.sendMessage(ChatColor.RED + "Server will restart automatically in " + matches + " matches");
+            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr-restart-in-matches"));
         } else if(matches == 0) {
-            sender.sendMessage(ChatColor.RED + "Server will restart automatically after the current match");
+            audience.sendMessage(new Component(ChatColor.RED).translate("command.admin.ppr-restart-after-match"));
         }
     }
 
@@ -98,7 +109,7 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.end")
     public void end(CommandContext args, CommandSender sender) throws CommandException {
-        Match match = PGM.getMatchManager().getCurrentMatch(sender);
+        Match match = matchManager.getCurrentMatch(sender);
 
         Competitor winner = null;
         if(args.argsLength() > 0) {
@@ -129,23 +140,24 @@ public class AdminCommands implements Commands {
     @CommandPermissions("pgm.next.set")
     public List<String> setnext(CommandContext args, CommandSender sender) throws CommandException {
         final String mapName = args.argsLength() > 0 ? args.getJoinedStrings(0) : "";
+        final Audience audience = audiences.get(sender);
         if(args.getSuggestionContext() != null) {
             return CommandUtils.completeMapName(mapName);
         }
 
-        MatchManager mm = PGM.getMatchManager();
         boolean restartQueued = restartManager.isRestartRequested(ServerDoc.Restart.Priority.NORMAL);
 
-        if (restartQueued && !args.hasFlag('f')) {
-            throw new CommandException(PGMTranslations.get().t("command.admin.setNext.restartQueued", sender));
+        if(restartQueued && !args.hasFlag('f')) {
+            throw new TranslatableCommandException("command.admin.setNext.restartQueued");
         }
 
-        mm.setNextMap(CommandUtils.getMap(mapName, sender));
-        if (restartQueued) {
+        matchManager.setNextMap(CommandUtils.getMap(mapName, sender));
+        if(restartQueued) {
             restartManager.cancelRestart();
-            sender.sendMessage(ChatColor.GREEN + PGMTranslations.get().t("command.admin.cancelRestart.restartUnqueued", sender));
+            audience.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.cancelRestart.restartUnqueued"));
         }
-        sender.sendMessage(ChatColor.DARK_PURPLE + PGMTranslations.get().t("command.admin.set.success", sender, ChatColor.GOLD + mm.getNextMap().getInfo().name + ChatColor.DARK_PURPLE));
+        BaseComponent nextMap = matchManager.getNextMap().getInfo().getComponentName();
+        audience.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.admin.set.success", nextMap));
         return null;
     }
 
@@ -158,7 +170,7 @@ public class AdminCommands implements Commands {
     @CommandPermissions("pgm.cancel")
     public void cancel(CommandContext args, CommandSender sender) throws CommandException {
         CommandUtils.getMatch(sender).countdowns().cancelAll(true);
-        sender.sendMessage(ChatColor.GREEN + PGMTranslations.get().t("command.admin.cancel.success", sender));
+        sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.cancel.success"));
     }
 
     @Command(
@@ -170,23 +182,26 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.skip")
     public void skip(CommandContext args, CommandSender sender) throws CommandException {
-        RotationManager manager = PGM.getMatchManager().getRotationManager();
+        RotationManager manager = matchManager.getRotationManager();
         RotationState rotation = manager.getRotation();
 
         if(args.argsLength() > 0) {
             int n = args.getInteger(0, 1);
             rotation = rotation.skip(n);
-            sender.sendMessage(
-                    ChatColor.GREEN +
-                    PGMTranslations.get().t("command.admin.skip.successMultiple", sender,
-                            PGMTranslations.get().t(n == 1 ? "maps.singularCompound" : "maps.pluralCompound", sender, n),
-                            rotation.getNext().getInfo().getShortDescription(sender) + ChatColor.GREEN
-                    )
-            );
+            // ChatColor.GREEN + PGMTranslations.get().t("command.admin.skip.successMultiple", sender, PGMTranslations.get().t(n == 1 ? "maps.singularCompound" : "maps.pluralCompound", sender, n),
+            // rotation.getNext().getInfo().getShortDescription(sender) + ChatColor.GREEN
+            BaseComponent compound = n == 1 ? new Component("maps.singularCompund")
+                                            : new TranslatableComponent("maps.pluralCompound", String.valueOf(n));
+            // TODO: rewrite MapInfo to return Components
+            BaseComponent nextMapDescription = new Component(rotation.getNext().getInfo().getShortDescription(sender));
+            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.successMultiple", compound, nextMapDescription));
+
         } else {
             PGMMap skippedMap = rotation.getNext();
             rotation = rotation.skip(1);
-            sender.sendMessage(ChatColor.GREEN + PGMTranslations.get().t("command.admin.skip.success", sender, skippedMap.getInfo().getShortDescription(sender) + ChatColor.GREEN));
+            // TODO: rewrite
+            BaseComponent skippedMapDescription = new Component(skippedMap.getInfo().getShortDescription(sender));
+            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skip.success", skippedMapDescription));
         }
 
         manager.setRotation(rotation);
@@ -201,16 +216,18 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.skip")
     public void skipto(CommandContext args, CommandSender sender) throws CommandException {
-        RotationManager manager = PGM.getMatchManager().getRotationManager();
+        RotationManager manager = matchManager.getRotationManager();
         RotationState rotation = manager.getRotation();
 
         int newNextId = args.getInteger(0) - 1;
         if(RotationState.isNextIdValid(rotation.getMaps(), newNextId)) {
             rotation = rotation.skipTo(newNextId);
             manager.setRotation(rotation);
-            sender.sendMessage(ChatColor.GREEN + PGMTranslations.get().t("command.admin.skipto.success", sender, rotation.getNext().getInfo().getShortDescription(sender) + ChatColor.GREEN));
+            // TODO: rewrite
+            BaseComponent nextMapDescription = new Component(rotation.getNext().getInfo().getShortDescription(sender));
+            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.skipto.success", nextMapDescription));
         } else {
-            throw new CommandException(PGMTranslations.get().t("command.admin.skipto.invalidPoint", sender));
+            throw new TranslatableCommandException("command.admin.skipto.invalidPoint");
         }
     }
 
@@ -223,9 +240,9 @@ public class AdminCommands implements Commands {
     )
     @CommandPermissions("pgm.reload")
     public void pgm(CommandContext args, CommandSender sender) throws CommandException {
-        PGM.get().reloadConfig();
+        pgm.reloadConfig();
 
-        sender.sendMessage(ChatColor.GREEN + PGMTranslations.get().t("command.admin.pgm", sender));
+        sender.sendMessage(new Component(ChatColor.GREEN).translate("command.admin.pgm"));
     }
 
     @Command(

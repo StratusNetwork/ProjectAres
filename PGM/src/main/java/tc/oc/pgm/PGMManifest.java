@@ -1,5 +1,7 @@
 package tc.oc.pgm;
 
+import com.google.inject.Provides;
+import org.bukkit.plugin.Plugin;
 import tc.oc.commons.bukkit.flairs.FlairRenderer;
 import tc.oc.commons.bukkit.nick.UsernameRenderer;
 import tc.oc.commons.core.inject.HybridManifest;
@@ -11,6 +13,7 @@ import tc.oc.pgm.chat.MatchFlairRenderer;
 import tc.oc.pgm.chat.MatchNameInvalidator;
 import tc.oc.pgm.chat.MatchUsernameRenderer;
 import tc.oc.pgm.commands.AdminCommands;
+import tc.oc.pgm.commands.CommandUtils;
 import tc.oc.pgm.commands.MatchCommands;
 import tc.oc.pgm.commands.PollCommands;
 import tc.oc.pgm.debug.PGMLeakListener;
@@ -106,5 +109,11 @@ public final class PGMManifest extends HybridManifest {
         requestStaticInjection(State.class);
         requestStaticInjection(PollCommands.class);
         requestStaticInjection(MatchFooterTabEntry.class);
+        requestStaticInjection(CommandUtils.class);
+    }
+
+    @Provides
+    PGM pgm(Plugin plugin) {
+        return (PGM) plugin;
     }
 }

@@ -1,15 +1,29 @@
 package tc.oc.pgm.commands;
 
-import org.bukkit.ChatColor;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.NestedCommand;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import tc.oc.pgm.PGM;
+import tc.oc.commons.core.chat.Component;
+import tc.oc.commons.core.commands.NestedCommands;
+import tc.oc.commons.core.commands.TranslatableCommandException;
 import tc.oc.pgm.map.PGMMap;
-import tc.oc.pgm.rotation.*;
+import tc.oc.pgm.match.MatchManager;
+import tc.oc.pgm.rotation.AppendTransformation;
+import tc.oc.pgm.rotation.InsertTransformation;
+import tc.oc.pgm.rotation.RemoveAllTransformation;
+import tc.oc.pgm.rotation.RemoveIndexTransformation;
+import tc.oc.pgm.rotation.RotationManager;
+import tc.oc.pgm.rotation.RotationState;
+import tc.oc.pgm.rotation.RotationTransformation;
 
-import com.sk89q.minecraft.util.commands.*;
+import javax.inject.Inject;
 
-public class RotationEditCommands {
+public class RotationEditCommands implements NestedCommands {
     public static class RotationEditParent {
         @Command(
             aliases = {"rotationedit", "rotedit", "roted", "editrotation", "editrot", "erot"},
@@ -22,6 +36,12 @@ public class RotationEditCommands {
         }
     }
 
+    private final MatchManager matchManager;
+
+    @Inject RotationEditCommands(MatchManager matchManager) {
+        this.matchManager = matchManager;
+    }
+
     @Command(
         aliases = {"reload"},
         desc = "Reload the map rotation from it's provider",
@@ -29,12 +49,12 @@ public class RotationEditCommands {
         max = 0
     )
     @CommandPermissions("pgm.rotation.reload")
-    public static void reload(CommandContext args, CommandSender sender) throws CommandException {
-        boolean success = PGM.getMatchManager().loadRotations();
+    public void reload(CommandContext args, CommandSender sender) throws CommandException {
+        boolean success = matchManager.loadRotations();
         if(success) {
-            sender.sendMessage(ChatColor.GREEN + "Reloaded the rotation successfully");
+            sender.sendMessage(new Component(ChatColor.GREEN).translate("command.rotation.reload.success"));
         } else {
-            sender.sendMessage(ChatColor.RED + "There was an error reloading the rotation - check the server logs");
+            throw new TranslatableCommandException("command.rotation.reload.failed");
         }
     }
 
@@ -46,11 +66,12 @@ public class RotationEditCommands {
         max = -1
     )
     @CommandPermissions("pgm.rotation.append")
-    public static void append(CommandContext args, CommandSender sender) throws CommandException {
+    public void append(CommandContext args, CommandSender sender) throws CommandException {
         PGMMap map = CommandUtils.getMap(args.getJoinedStrings(0), sender);
 
         apply(new AppendTransformation(map));
-        sender.sendMessage(ChatColor.DARK_PURPLE + "Appended " + ChatColor.GOLD + map.getInfo().name + ChatColor.DARK_PURPLE + " to the rotation.");
+        // TODO: rewrite
+        sender.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.rotation.append.success", new Component(map.getInfo().name).color(ChatColor.GOLD)));
     }
 
     @Command(
@@ -61,12 +82,16 @@ public class RotationEditCommands {
         max = -1
     )
     @CommandPermissions("pgm.rotation.insert")
-    public static void insert(CommandContext args, CommandSender sender) throws CommandException {
+    public void insert(CommandContext args, CommandSender sender) throws CommandException {
         int index = args.getInteger(0);
         PGMMap map = CommandUtils.getMap(args.getJoinedStrings(1), sender);
 
         apply(new InsertTransformation(map, index - 1));
-        sender.sendMessage(ChatColor.GOLD + map.getInfo().name + ChatColor.DARK_PURPLE + " inserted at index " + index);
+        // ChatColor.GOLD + map.getInfo().name + ChatColor.DARK_PURPLE + " inserted at index " + index
+        sender.sendMessage(new Component(ChatColor.DARK_PURPLE)
+            .translate("command.rotation.insert.success",
+                new Component(map.getInfo().name).color(ChatColor.GOLD),
+                String.valueOf(index)));
     }
 
     @Command(
@@ -77,11 +102,12 @@ public class RotationEditCommands {
         max = -1
     )
     @CommandPermissions("pgm.rotation.remove")
-    public static void remove(CommandContext args, CommandSender sender) throws CommandException {
+    public void remove(CommandContext args, CommandSender sender) throws CommandException {
         PGMMap map = CommandUtils.getMap(args.getJoinedStrings(0), sender);
 
         apply(new RemoveAllTransformation(map));
-        sender.sendMessage(ChatColor.DARK_PURPLE + "Removed all instances of " + ChatColor.GOLD + map.getInfo().name + ChatColor.DARK_PURPLE + " from the rotation");
+        // TODO: rewrite
+        sender.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.rotation.remove.success", new Component(map.getInfo().name).color(ChatColor.GOLD)));
     }
 
     @Command(
@@ -92,15 +118,16 @@ public class RotationEditCommands {
         max = 1
     )
     @CommandPermissions("pgm.rotation.removeat")
-    public static void removeat(CommandContext args, CommandSender sender) throws CommandException {
+    public void removeat(CommandContext args, CommandSender sender) throws CommandException {
         int index = args.getInteger(0);
 
         apply(new RemoveIndexTransformation(index - 1));
-        sender.sendMessage(ChatColor.DARK_PURPLE + "Removed map at index " + index + " from the rotation");
+        // TODO: rewrite
+        sender.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.rotation.removeat.success", String.valueOf(index)));
     }
 
-    private static void apply(RotationTransformation transform) throws CommandException {
-        RotationManager manager = PGM.getMatchManager().getRotationManager();
+    private void apply(RotationTransformation transform) throws CommandException {
+        RotationManager manager = matchManager.getRotationManager();
         RotationState rotation = transform.apply(manager.getRotation());
         manager.setRotation(rotation);
     }

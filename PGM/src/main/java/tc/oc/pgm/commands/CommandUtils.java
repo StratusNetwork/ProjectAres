@@ -4,24 +4,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import org.bukkit.command.CommandSender;
+import tc.oc.commons.core.commands.TranslatableCommandException;
 import tc.oc.commons.core.formatting.StringUtils;
 import tc.oc.pgm.PGM;
-import tc.oc.pgm.PGMTranslations;
 import tc.oc.pgm.features.FeatureDefinition;
 import tc.oc.pgm.map.MapLibrary;
 import tc.oc.pgm.map.PGMMap;
 import tc.oc.pgm.match.Competitor;
 import tc.oc.pgm.match.Match;
+import tc.oc.pgm.match.MatchManager;
 import tc.oc.pgm.match.MatchModule;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.rotation.RotationManager;
 import tc.oc.pgm.rotation.RotationState;
 
 public class CommandUtils {
+    @Inject private static MatchManager matchManager;
 
     public static List<String> completeMapName(String prefix) {
         return StringUtils.complete(prefix, PGM.get().getMapLibrary().getMapNames());
@@ -40,15 +43,15 @@ public class CommandUtils {
     public static PGMMap getMap(String search, CommandSender sender) throws CommandException {
         PGMMap map;
         if((map = getMap(search)) == null) {
-            throw new CommandException(PGMTranslations.get().t("command.mapNotFound", sender));
+            throw new TranslatableCommandException("command.mapNotFound");
         }
         return map;
     }
 
     public static Match getMatch(CommandSender sender) throws CommandException {
-        Match match = PGM.getMatchManager().getCurrentMatch(sender);
+        Match match = matchManager.getCurrentMatch(sender);
         if(match == null) {
-            throw new CommandException("Command must be used in the context of a match");
+            throw new TranslatableCommandException("command.context");
         }
         return match;
     }
@@ -56,7 +59,7 @@ public class CommandUtils {
     public static <T extends MatchModule> T getMatchModule(Class<T> klass, CommandSender sender) throws CommandException {
         T mm = getMatch(sender).getMatchModule(klass);
         if(mm == null) {
-            throw new CommandException(PGMTranslations.get().t("command.moduleNotFound", sender, klass.getSimpleName()));
+            throw new TranslatableCommandException("command.moduleNotFound", klass.getSimpleName());
         }
         return mm;
     }
@@ -71,18 +74,18 @@ public class CommandUtils {
 
         Competitor competitor = StringUtils.bestFuzzyMatch(search, byName, 0.9);
         if(competitor == null) {
-            throw new CommandException(PGMTranslations.get().t("command.competitorNotFound", sender));
+            throw new TranslatableCommandException("command.competitorNotFound");
         }
 
         return competitor;
     }
 
     public static @Nonnull RotationState getRotation(String search, CommandSender sender) throws CommandException {
-        RotationManager manager = PGM.getMatchManager().getRotationManager();
+        RotationManager manager = matchManager.getRotationManager();
 
         RotationState rotation = search != null ? manager.getRotation(search) : manager.getRotation();
         if(rotation == null) {
-            throw new CommandException(PGMTranslations.get().t("command.rotationNotFound", sender));
+            throw new TranslatableCommandException("command.rotationNotFound");
         }
 
         return rotation;
@@ -92,7 +95,7 @@ public class CommandUtils {
         Match match = getMatch(sender);
         T feature = match.getModuleContext().features().get(id, type);
         if(feature == null) {
-            throw new CommandException("No " + type.getSimpleName() + " with ID " + id);
+            throw new TranslatableCommandException("command.noFeature", type.getSimpleName(), id);
         }
         return feature;
     }
