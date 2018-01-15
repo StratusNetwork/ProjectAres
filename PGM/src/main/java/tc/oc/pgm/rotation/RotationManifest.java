@@ -9,7 +9,8 @@ public class RotationManifest extends HybridManifest {
     protected void configure() {
         bind(DynamicRotationListener.class);
         new ListenerBinder(binder()).bindListener().to(DynamicRotationListener.class);
-        new CommandBinder(binder()).register(RotationControlCommands.RotationControlParent.class);
-        new CommandBinder(binder()).register(RotationEditCommands.RotationEditParent.class);
+        CommandBinder binder = new CommandBinder(binder());
+        binder.register(RotationControlCommands.RotationControlParent.class);
+        binder.register(RotationEditCommands.RotationEditParent.class);
     }
 }
