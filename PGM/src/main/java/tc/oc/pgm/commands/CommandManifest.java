@@ -6,8 +6,9 @@ import tc.oc.commons.core.inject.HybridManifest;
 public class CommandManifest extends HybridManifest {
     @Override
     protected void configure() {
-        new CommandBinder(binder()).register(AdminCommands.class);
-        new CommandBinder(binder()).register(MapCommands.class);
-        new CommandBinder(binder()).register(MatchCommands.class);
+        CommandBinder binder = new CommandBinder(binder());
+        binder.register(AdminCommands.class);
+        binder.register(MapCommands.class);
+        binder.register(MatchCommands.class);
     }
 }
