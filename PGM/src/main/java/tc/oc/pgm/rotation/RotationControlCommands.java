@@ -17,7 +17,6 @@ import tc.oc.pgm.match.MatchManager;
 
 import javax.inject.Inject;
 
-// TODO: properly bind commands
 public class RotationControlCommands {
     public static class RotationControlParent {
         @Command(
@@ -51,9 +50,9 @@ public class RotationControlCommands {
         RotationManager manager = matchManager.getRotationManager();
 
         String name = args.getJoinedStrings(0);
-        CommandUtils.getRotation(name, sender);
+        RotationState state = CommandUtils.getRotation(name, sender);
 
-        manager.setCurrentRotationName(name);
+        manager.setRotation(state);
         audience.sendMessage(new Component(ChatColor.GRAY).translate("command.rotation.set.success", new Component(name).color(ChatColor.AQUA)));
     }
 }

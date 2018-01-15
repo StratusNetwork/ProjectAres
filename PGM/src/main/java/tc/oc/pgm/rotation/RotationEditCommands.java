@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import tc.oc.commons.bukkit.chat.Audiences;
 import tc.oc.commons.core.chat.Audience;
 import tc.oc.commons.core.chat.Component;
-import tc.oc.commons.core.commands.NestedCommands;
 import tc.oc.commons.core.commands.TranslatableCommandException;
 import tc.oc.pgm.commands.CommandUtils;
 import tc.oc.pgm.map.PGMMap;
@@ -19,7 +18,7 @@ import tc.oc.pgm.match.MatchManager;
 
 import javax.inject.Inject;
 
-public class RotationEditCommands implements NestedCommands {
+public class RotationEditCommands {
     public static class RotationEditParent {
         @Command(
             aliases = {"rotationedit", "rotedit", "roted", "editrotation", "editrot", "erot"},
@@ -70,7 +69,6 @@ public class RotationEditCommands implements NestedCommands {
         PGMMap map = CommandUtils.getMap(args.getJoinedStrings(0), sender);
 
         apply(new AppendTransformation(map));
-        // TODO: rewrite
         audience.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.rotation.append.success", new Component(map.getInfo().name).color(ChatColor.GOLD)));
     }
 
@@ -88,7 +86,6 @@ public class RotationEditCommands implements NestedCommands {
         PGMMap map = CommandUtils.getMap(args.getJoinedStrings(1), sender);
 
         apply(new InsertTransformation(map, index - 1));
-        // ChatColor.GOLD + map.getInfo().name + ChatColor.DARK_PURPLE + " inserted at index " + index
         audience.sendMessage(new Component(ChatColor.DARK_PURPLE)
             .translate("command.rotation.insert.success",
                 new Component(map.getInfo().name).color(ChatColor.GOLD),
@@ -108,7 +105,6 @@ public class RotationEditCommands implements NestedCommands {
         PGMMap map = CommandUtils.getMap(args.getJoinedStrings(0), sender);
 
         apply(new RemoveAllTransformation(map));
-        // TODO: rewrite
         audience.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.rotation.remove.success", new Component(map.getInfo().name).color(ChatColor.GOLD)));
     }
 
@@ -125,7 +121,6 @@ public class RotationEditCommands implements NestedCommands {
         int index = args.getInteger(0);
 
         apply(new RemoveIndexTransformation(index - 1));
-        // TODO: rewrite
         audience.sendMessage(new Component(ChatColor.DARK_PURPLE).translate("command.rotation.removeat.success", String.valueOf(index)));
     }
 
