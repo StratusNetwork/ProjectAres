@@ -76,7 +76,7 @@ public class ClassCommands implements Commands {
     }
 
     @Command(
-        aliases = { "classlist", "classes", "listclasses", "cls", "kits },
+        aliases = { "classlist", "classes", "listclasses", "cls", "kits" },
         desc = "Lists the classes available on this map",
         min = 0,
         max = 1
