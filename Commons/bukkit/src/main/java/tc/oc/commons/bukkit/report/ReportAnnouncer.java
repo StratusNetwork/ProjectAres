@@ -75,7 +75,7 @@ public class ReportAnnouncer implements PluginFacet, MessageListener {
         if(localServer._id().equals(message.document().server_id()) ||
            (config.crossServer() && config.families().contains(message.document().family()))) {
 
-            final List<? extends BaseComponent> formatted = reportFormatter.format(message.document(), true, false);
+            final List<? extends BaseComponent> formatted = reportFormatter.format(message.document(), true, false, false);
             adminChannel.viewers()
                         .filter(viewer -> viewer.hasPermission(ReportPermissions.RECEIVE))
                         .forEach(viewer -> {

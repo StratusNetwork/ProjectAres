@@ -91,6 +91,10 @@ public class ReportCommands implements Commands, Listener {
         }
     }
 
+    private void displayReports(Audience audience, Report report, boolean showServer, boolean showTime, boolean displayOffline) {
+        audience.sendMessages(reportFormatter.format(report, showServer, showTime, displayOffline));
+    }
+
     @Command(
         aliases = { "report" },
         usage = "<player> <reason>",
@@ -145,7 +149,7 @@ public class ReportCommands implements Commands, Listener {
     @Command(
         aliases = { "reports", "reps" },
         usage = "[-a] [-p page] [player]",
-        flags = "ap:",
+        flags = "aop:",
         desc = "List recent reports on this server, or all servers, optionally filtering by player.",
         min = 0,
         max = 1
@@ -159,6 +163,7 @@ public class ReportCommands implements Commands, Listener {
             CommandFutureCallback.onSuccess(sender, args, userResult -> {
                 final int page = args.getFlagInteger('p', 1);
                 final boolean crossServer = args.hasFlag('a');
+                final boolean showOffline = args.hasFlag('o');
 
                 ReportSearchRequest request = ReportSearchRequest.create(page, PER_PAGE);
                 request = crossServer ? request.forFamilies(reportConfiguration.families())
@@ -184,7 +189,7 @@ public class ReportCommands implements Commands, Listener {
                         audience.sendMessage(new HeaderComponent(title));
                         for(Report report : reportResult.documents()) {
                             if(report.reported() != null) {
-                                audience.sendMessages(reportFormatter.format(report, crossServer, true));
+                                displayReports(audience, report, crossServer, true, showOffline);
                             }
                         }
                     })
