@@ -6,14 +6,10 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import tc.oc.commons.bukkit.chat.HeaderComponent;
 import tc.oc.commons.bukkit.chat.NameStyle;
 import tc.oc.commons.bukkit.commands.UserFinder;
@@ -21,9 +17,7 @@ import tc.oc.commons.core.chat.Component;
 import tc.oc.commons.core.chat.Components;
 import tc.oc.commons.core.commands.CommandFutureCallback;
 import tc.oc.commons.core.concurrent.Flexecutor;
-import tc.oc.commons.core.formatting.StringUtils;
 import tc.oc.minecraft.scheduler.Sync;
-import tc.oc.pgm.commands.CommandUtils;
 import tc.oc.pgm.match.MatchPlayer;
 import tc.oc.pgm.match.inject.MatchScoped;
 
@@ -49,24 +43,15 @@ public class MatchStatsCommand {
              max = 1
     )
     @CommandPermissions("pgm.playerstats.matchstats")
-    public List<String> matchStats(CommandContext args, CommandSender sender) throws CommandException {
-        MatchPlayer player = senderToMatchPlayer(sender);
-        if(args.getSuggestionContext() != null) {
-            if(args.getSuggestionContext().getIndex() == 0) {
-                return StringUtils.complete(args.getString(0),
-                                            Bukkit.getOnlinePlayers().stream().map(Player::getDisplayName).collect(Collectors.toSet()));
-            }
-        }
-
+    public void matchStats(CommandContext args, CommandSender sender) throws CommandException {
         if(args.argsLength() == 0) {
-            displayStats(player);
+            displayStats(senderToMatchPlayer(sender));
         } else {
             flexecutor.callback(
                 userFinder.findLocalPlayerOrSender(sender, args, 0),
                 CommandFutureCallback.onSuccess(sender, user -> displayStats(senderToMatchPlayer(user.player())))
             );
         }
-        return null;
     }
 
     private BaseComponent parseStats(MatchPlayer player) {
