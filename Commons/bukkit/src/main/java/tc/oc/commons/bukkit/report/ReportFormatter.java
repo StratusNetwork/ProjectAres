@@ -35,10 +35,6 @@ public class ReportFormatter {
     public List<? extends BaseComponent> format(Report report, boolean showServer, boolean showTime, boolean displayOffline) {
         final List<BaseComponent> parts = new ArrayList<>();
 
-        if(!displayOffline && onlinePlayers.find(report.reported()).onlinePlayer() == null) {
-            return Collections.emptyList();
-        }
-
         parts.add(new Component(
             new Component("["),
             new Component("Rep", ChatColor.GOLD),

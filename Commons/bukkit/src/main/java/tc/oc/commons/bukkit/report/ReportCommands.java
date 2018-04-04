@@ -20,6 +20,7 @@ import java.time.Instant;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 import tc.oc.api.bukkit.users.BukkitUserStore;
+import tc.oc.api.bukkit.users.OnlinePlayers;
 import tc.oc.api.docs.Report;
 import tc.oc.api.docs.Server;
 import tc.oc.minecraft.scheduler.SyncExecutor;
@@ -55,6 +56,7 @@ public class ReportCommands implements Commands, Listener {
     private final BukkitUserStore userStore;
     private final Audiences audiences;
     private final IdentityProvider identities;
+    private final OnlinePlayers onlinePlayers;
 
     private final Map<CommandSender, Instant> senderLastReport = new WeakHashMap<>();
 
@@ -67,7 +69,8 @@ public class ReportCommands implements Commands, Listener {
                            Server localServer,
                            BukkitUserStore userStore,
                            Audiences audiences,
-                           IdentityProvider identities) {
+                           IdentityProvider identities,
+                           OnlinePlayers onlinePlayers) {
         this.reportFormatter = reportFormatter;
         this.reportService = reportService;
         this.reportCreator = reportCreator;
@@ -78,6 +81,7 @@ public class ReportCommands implements Commands, Listener {
         this.userStore = userStore;
         this.audiences = audiences;
         this.identities = identities;
+        this.onlinePlayers = onlinePlayers;
     }
 
     @EventHandler
@@ -188,7 +192,7 @@ public class ReportCommands implements Commands, Listener {
                         final Audience audience = audiences.get(sender);
                         audience.sendMessage(new HeaderComponent(title));
                         for(Report report : reportResult.documents()) {
-                            if(report.reported() != null) {
+                            if(report.reported() != null && onlinePlayers.find(report.reported()).isOnline()) {
                                 displayReports(audience, report, crossServer, true, showOffline);
                             }
                         }
