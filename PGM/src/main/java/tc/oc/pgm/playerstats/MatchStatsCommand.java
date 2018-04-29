@@ -50,7 +50,6 @@ public class MatchStatsCommand {
     )
     @CommandPermissions("pgm.playerstats.matchstats")
     public List<String> matchStats(CommandContext args, CommandSender sender) throws CommandException {
-        MatchPlayer player = senderToMatchPlayer(sender);
         if(args.getSuggestionContext() != null) {
             if(args.getSuggestionContext().getIndex() == 0) {
                 return StringUtils.complete(args.getString(0),
@@ -59,11 +58,11 @@ public class MatchStatsCommand {
         }
 
         if(args.argsLength() == 0) {
-            displayStats(player);
+            displayStats(sender, senderToMatchPlayer(sender));
         } else {
             flexecutor.callback(
-                userFinder.findLocalPlayerOrSender(sender, args, 0),
-                CommandFutureCallback.onSuccess(sender, user -> displayStats(senderToMatchPlayer(user.player())))
+                userFinder.findLocalPlayer(sender, args, 0),
+                CommandFutureCallback.onSuccess(sender, user -> displayStats(sender, senderToMatchPlayer(user.player())))
             );
         }
         return null;
@@ -77,8 +76,8 @@ public class MatchStatsCommand {
         return Components.join(Components.newline(), Lists.newArrayList(matchKills, matchDeaths, matchRatio));
     }
 
-    private void displayStats(MatchPlayer player) {
-        player.sendMessage(new HeaderComponent(new TranslatableComponent("command.matchstats.header", player.getStyledName(NameStyle.VERBOSE))));
-        player.sendMessage(parseStats(player));
+    private void displayStats(CommandSender sender, MatchPlayer player) {
+        sender.sendMessage(new HeaderComponent(new TranslatableComponent("command.matchstats.header", player.getStyledName(NameStyle.VERBOSE))));
+        sender.sendMessage(parseStats(player));
     }
 }
