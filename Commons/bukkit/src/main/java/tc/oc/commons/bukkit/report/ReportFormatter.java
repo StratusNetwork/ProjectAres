@@ -1,12 +1,14 @@
 package tc.oc.commons.bukkit.report;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import tc.oc.api.bukkit.users.OnlinePlayers;
 import tc.oc.api.docs.Report;
 import tc.oc.api.servers.ServerStore;
 import tc.oc.commons.bukkit.chat.NameStyle;
@@ -22,13 +24,15 @@ public class ReportFormatter {
 
     private final IdentityProvider identityProvider;
     private final ServerStore servers;
+    private final OnlinePlayers onlinePlayers;
 
-    @Inject ReportFormatter(IdentityProvider identityProvider, ServerStore servers) {
+    @Inject ReportFormatter(IdentityProvider identityProvider, ServerStore servers, OnlinePlayers onlinePlayers) {
         this.identityProvider = identityProvider;
         this.servers = servers;
+        this.onlinePlayers = onlinePlayers;
     }
 
-    public List<? extends BaseComponent> format(Report report, boolean showServer, boolean showTime) {
+    public List<? extends BaseComponent> format(Report report, boolean showServer, boolean showTime, boolean displayOffline) {
         final List<BaseComponent> parts = new ArrayList<>();
 
         parts.add(new Component(

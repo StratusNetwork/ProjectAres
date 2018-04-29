@@ -20,6 +20,7 @@ import java.time.Instant;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 import tc.oc.api.bukkit.users.BukkitUserStore;
+import tc.oc.api.bukkit.users.OnlinePlayers;
 import tc.oc.api.docs.Report;
 import tc.oc.api.docs.Server;
 import tc.oc.minecraft.scheduler.SyncExecutor;
@@ -55,6 +56,7 @@ public class ReportCommands implements Commands, Listener {
     private final BukkitUserStore userStore;
     private final Audiences audiences;
     private final IdentityProvider identities;
+    private final OnlinePlayers onlinePlayers;
 
     private final Map<CommandSender, Instant> senderLastReport = new WeakHashMap<>();
 
@@ -67,7 +69,8 @@ public class ReportCommands implements Commands, Listener {
                            Server localServer,
                            BukkitUserStore userStore,
                            Audiences audiences,
-                           IdentityProvider identities) {
+                           IdentityProvider identities,
+                           OnlinePlayers onlinePlayers) {
         this.reportFormatter = reportFormatter;
         this.reportService = reportService;
         this.reportCreator = reportCreator;
@@ -78,6 +81,7 @@ public class ReportCommands implements Commands, Listener {
         this.userStore = userStore;
         this.audiences = audiences;
         this.identities = identities;
+        this.onlinePlayers = onlinePlayers;
     }
 
     @EventHandler
@@ -89,6 +93,10 @@ public class ReportCommands implements Commands, Listener {
         if(!reportConfiguration.enabled()) {
             throw new TranslatableCommandException("command.reports.notEnabled");
         }
+    }
+
+    private void displayReports(Audience audience, Report report, boolean showServer, boolean showTime, boolean displayOffline) {
+        audience.sendMessages(reportFormatter.format(report, showServer, showTime, displayOffline));
     }
 
     @Command(
@@ -145,7 +153,7 @@ public class ReportCommands implements Commands, Listener {
     @Command(
         aliases = { "reports", "reps" },
         usage = "[-a] [-p page] [player]",
-        flags = "ap:",
+        flags = "aop:",
         desc = "List recent reports on this server, or all servers, optionally filtering by player.",
         min = 0,
         max = 1
@@ -159,6 +167,7 @@ public class ReportCommands implements Commands, Listener {
             CommandFutureCallback.onSuccess(sender, args, userResult -> {
                 final int page = args.getFlagInteger('p', 1);
                 final boolean crossServer = args.hasFlag('a');
+                final boolean showOffline = args.hasFlag('o');
 
                 ReportSearchRequest request = ReportSearchRequest.create(page, PER_PAGE);
                 request = crossServer ? request.forFamilies(reportConfiguration.families())
@@ -183,8 +192,8 @@ public class ReportCommands implements Commands, Listener {
                         final Audience audience = audiences.get(sender);
                         audience.sendMessage(new HeaderComponent(title));
                         for(Report report : reportResult.documents()) {
-                            if(report.reported() != null) {
-                                audience.sendMessages(reportFormatter.format(report, crossServer, true));
+                            if(report.reported() != null && onlinePlayers.find(report.reported()).isOnline()) {
+                                displayReports(audience, report, crossServer, true, showOffline);
                             }
                         }
                     })
