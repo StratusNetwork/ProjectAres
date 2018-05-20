@@ -1,6 +1,7 @@
 package tc.oc.pgm.mutation.types.targetable;
 
 import com.google.common.collect.Range;
+import net.minecraft.server.GameRules;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import tc.oc.pgm.match.Match;
@@ -18,6 +19,16 @@ public class LightningMutation extends TargetMutation.Impl {
 
     public LightningMutation(Match match) {
         super(match, FREQUENCY);
+    }
+
+    @Override
+    public void enable() {
+        match().getWorld().setGameRuleValue("doFireTick", "false");
+    }
+
+    @Override
+    public void disable() {
+        match().getWorld().setGameRuleValue("doFireTick", "true");
     }
 
     @Override
