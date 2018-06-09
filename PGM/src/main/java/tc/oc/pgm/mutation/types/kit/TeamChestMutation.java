@@ -85,7 +85,7 @@ public class TeamChestMutation extends KitMutation {
         if (teamChest.filter(teamInventory -> {
             return teamInventory.equals(event.getView().getTopInventory());
         }).isPresent() &&
-                isItemEvil(event.getCurrentItem())) {
+                isBlacklistedItem(event.getCurrentItem())) {
             event.setCancelled(true);
             return;
         }
@@ -107,7 +107,7 @@ public class TeamChestMutation extends KitMutation {
         });
     }
 
-    private boolean isItemEvil(ItemStack item) {
+    private boolean isBlacklistedItem(ItemStack item) {
         if(item.getType() == TOOL_TYPE) return true;
         if(oWmm.filter(wmm -> wmm.isObjectiveWool(item)).isPresent()) return true;
 
