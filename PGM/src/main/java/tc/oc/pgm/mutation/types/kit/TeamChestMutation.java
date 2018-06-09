@@ -42,12 +42,22 @@ public class TeamChestMutation extends KitMutation {
     public TeamChestMutation(Match match) {
         super(match, false);
         optWools = match().module(WoolMatchModule.class);
+    }
+
+    @Override
+    public void enable() {
+        super.enable();
         for (Party party : match().getParties()) {
             if (party.isParticipatingType()) {
                 // Could the chest title be localized properly?
                 teamChests.put(party, match().getServer().createInventory(null, CHEST_SIZE));
             }
         }
+    }
+
+    @Override
+    public void disable() {
+        teamChests.clear();
     }
 
     @Override
