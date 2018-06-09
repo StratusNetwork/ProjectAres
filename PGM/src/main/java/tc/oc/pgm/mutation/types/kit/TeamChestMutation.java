@@ -33,8 +33,6 @@ import java.util.WeakHashMap;
 public class TeamChestMutation extends KitMutation {
     final static int SLOT_ID = 17; // Top right
     final static Material TOOL_TYPE = Material.ENDER_CHEST;
-    final static String ITEM_NAME_KEY = "mutation.type.teamchest.item_name";
-    final static String ITEM_LORE_KEY = "mutation.type.teamchest.item_lore";
     final static int CHEST_SIZE = 27;
 
     final Map<Party, Inventory> teamChests = new WeakHashMap<>();
@@ -127,8 +125,8 @@ public class TeamChestMutation extends KitMutation {
 
     private Kit getKitForPlayer(MatchPlayer player) {
         ItemStack stack = new ItemBuilder(item(TOOL_TYPE))
-                .name(ChatColor.DARK_PURPLE + PGMTranslations.t(ITEM_NAME_KEY, player))
-                .lore(ChatColor.DARK_AQUA + PGMTranslations.t(ITEM_LORE_KEY, player))
+                .name(ChatColor.DARK_PURPLE + PGMTranslations.t("mutation.type.teamchest.item_name", player))
+                .lore(ChatColor.DARK_AQUA + PGMTranslations.t("mutation.type.teamchest.item_lore", player))
                 .get();
 
         ItemKit kit = new SlotItemKit(stack, Slot.Player.forIndex(SLOT_ID));
