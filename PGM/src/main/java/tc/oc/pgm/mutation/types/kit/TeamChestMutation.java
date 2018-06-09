@@ -57,7 +57,7 @@ public class TeamChestMutation extends KitMutation {
     }
 
     // Open shared inventory instead of placing the chest
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChestUse(PlayerInteractEvent event) {
         if (event.getItem() == null) return;
 
