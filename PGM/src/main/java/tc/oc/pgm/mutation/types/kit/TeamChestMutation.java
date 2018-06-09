@@ -37,11 +37,11 @@ public class TeamChestMutation extends KitMutation {
 
     final Map<Party, Inventory> teamChests = new WeakHashMap<>();
 
-    final Optional<WoolMatchModule> oWmm;
+    final Optional<WoolMatchModule> optWools;
 
     public TeamChestMutation(Match match) {
         super(match, false);
-        oWmm = match().module(WoolMatchModule.class);
+        optWools = match().module(WoolMatchModule.class);
         for (Party party : match().getParties()) {
             if (party.isParticipatingType()) {
                 // Could the chest title be localized properly?
@@ -60,16 +60,16 @@ public class TeamChestMutation extends KitMutation {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChestUse(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
-        Optional<MatchPlayer> player = match().participant((Entity) bukkitPlayer);
-        if (!player.isPresent() ||
+        Optional<MatchPlayer> optPlayer = match().participant((Entity) bukkitPlayer);
+        if (optPlayer.isPresent() ||
                 !(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) ||
                 event.getItem() == null ||
                 event.getItem().getType() != TOOL_TYPE) {
             return;
         }
 
-        Optional<Inventory> oTeamInventory = getTeamsInventory(bukkitPlayer);
-        oTeamInventory.ifPresent(teamInventory -> {
+        Optional<Inventory> optTeamInventory = getTeamsInventory(bukkitPlayer);
+        optTeamInventory.ifPresent(teamInventory -> {
             event.setCancelled(true);
             // If the item is in the off-hand slot, it wont get put back visually for the player without this.
             if(event.getHand() == EquipmentSlot.OFF_HAND) event.getActor().updateInventory();
@@ -109,7 +109,7 @@ public class TeamChestMutation extends KitMutation {
 
     private boolean isBlacklistedItem(ItemStack item) {
         return item.getType() == TOOL_TYPE ||
-                oWmm.map(w -> w.isObjectiveWool(item)).orElse(false);
+                optWools.map(w -> w.isObjectiveWool(item)).orElse(false);
     }
 
     private Optional<Inventory> getTeamsInventory(Player bukkitPlayer) {
