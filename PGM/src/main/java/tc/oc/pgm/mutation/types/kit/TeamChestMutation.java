@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 
 public class TeamChestMutation extends KitMutation {
-    final static int SLOT_ID = 17; // Top right
     final static Material TOOL_TYPE = Material.ENDER_CHEST;
     final static int CHEST_SIZE = 27;
 
@@ -130,7 +129,7 @@ public class TeamChestMutation extends KitMutation {
                 .lore(ChatColor.DARK_AQUA + PGMTranslations.t("mutation.type.teamchest.item_lore", player))
                 .get();
 
-        ItemKit kit = new SlotItemKit(stack, Slot.Player.forIndex(SLOT_ID));
+        ItemKit kit = new SlotItemKit(stack, Slot.Player.forIndex(17));
         return kit;
     }
 }
