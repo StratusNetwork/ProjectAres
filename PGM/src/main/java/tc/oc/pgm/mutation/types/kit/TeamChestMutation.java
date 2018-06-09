@@ -49,7 +49,7 @@ public class TeamChestMutation extends KitMutation {
         super.enable();
         for (Party party : match().getParties()) {
             if (party.isParticipatingType()) {
-                // Could the chest title be localized properly?
+                // TODO: Could the chest title be localized properly?
                 teamChests.put(party, match().getServer().createInventory(null, CHEST_SIZE));
             }
         }
@@ -57,6 +57,7 @@ public class TeamChestMutation extends KitMutation {
 
     @Override
     public void disable() {
+        super.disable();
         teamChests.clear();
     }
 
@@ -67,7 +68,7 @@ public class TeamChestMutation extends KitMutation {
     }
 
     // Open shared inventory instead of placing the chest
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onChestUse(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
         Optional<MatchPlayer> optPlayer = match().participant((Entity) bukkitPlayer);
