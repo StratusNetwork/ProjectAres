@@ -43,7 +43,7 @@ public class TeamChestMutation extends KitMutation {
 
     public TeamChestMutation(Match match) {
         super(match, false);
-        oWmm = Optional.ofNullable(match().getMatchModule(WoolMatchModule.class));
+        oWmm = match().module(WoolMatchModule.class);
         for (Party party : match().getParties()) {
             if (party.isParticipatingType()) {
                 // Could the chest title be localized properly?
