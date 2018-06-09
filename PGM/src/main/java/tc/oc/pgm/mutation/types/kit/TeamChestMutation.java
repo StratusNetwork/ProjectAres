@@ -36,11 +36,11 @@ public class TeamChestMutation extends KitMutation {
 
     final Map<Party, Inventory> teamChests = new WeakHashMap<>();
 
-    final boolean woolsAllowed;
+    final Optional<WoolMatchModule> oWmm;
 
     public TeamChestMutation(Match match) {
         super(match, false);
-        this.woolsAllowed = match.getMatchModule(WoolMatchModule.class) == null;
+        oWmm = Optional.ofNullable(match().getMatchModule(WoolMatchModule.class));
         for (Party party : match().getParties()) {
             if (party.isParticipatingType()) {
                 // Could the chest title be localized properly?
@@ -109,7 +109,7 @@ public class TeamChestMutation extends KitMutation {
 
     private boolean isItemEvil(ItemStack item) {
         if(item.getType() == TOOL_TYPE) return true;
-        if(!woolsAllowed && item.getType() == Material.WOOL) return true;
+        if(oWmm.filter(wmm -> wmm.isObjectiveWool(item)).isPresent()) return true;
 
         return false;
     }
