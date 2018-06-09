@@ -108,10 +108,8 @@ public class TeamChestMutation extends KitMutation {
     }
 
     private boolean isBlacklistedItem(ItemStack item) {
-        if(item.getType() == TOOL_TYPE) return true;
-        if(oWmm.filter(wmm -> wmm.isObjectiveWool(item)).isPresent()) return true;
-
-        return false;
+        return item.getType() == TOOL_TYPE ||
+                oWmm.map(w -> w.isObjectiveWool(item)).orElse(false);
     }
 
     private Optional<Inventory> getTeamsInventory(Player bukkitPlayer) {
