@@ -123,12 +123,8 @@ public class TeamChestMutation extends KitMutation {
     }
 
     private Optional<Inventory> getTeamsInventory(Player bukkitPlayer) {
-        MatchPlayer player = match().getPlayer(bukkitPlayer);
-        Party team = player.getParty();
-
-        if (!team.isParticipating()) return Optional.empty();
-
-        return Optional.of(teamChests.get(team));
+        return match().participant((Entity) bukkitPlayer)
+                .map(matchPlayer -> teamChests.get(matchPlayer.getParty()));
     }
 
     private Kit getKitForPlayer(MatchPlayer player) {
