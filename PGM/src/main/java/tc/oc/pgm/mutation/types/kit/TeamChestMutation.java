@@ -84,7 +84,7 @@ public class TeamChestMutation extends KitMutation {
 
         // No putting blacklisted items (ender chest, possibly wool) into the chest
         Optional<Inventory> teamChest = getTeamsInventory(event.getActor());
-        if (teamChest.filter(teamInventory -> teamInventory.equals(event.getView().getTopInventory())).isPresent() &&
+        if (teamChest.map(teamInventory -> teamInventory.equals(event.getView().getTopInventory())).orElse(false) &&
                 isBlacklistedItem(event.getCurrentItem())) {
             event.setCancelled(true);
             return;
