@@ -75,7 +75,6 @@ public class TeamChestMutation extends KitMutation {
             // If the item is in the off-hand slot, it wont get put back visually for the player without this.
             if(event.getHand() == EquipmentSlot.OFF_HAND) event.getActor().updateInventory();
             bukkitPlayer.openInventory(teamInventory);
-
         });
     }
 
