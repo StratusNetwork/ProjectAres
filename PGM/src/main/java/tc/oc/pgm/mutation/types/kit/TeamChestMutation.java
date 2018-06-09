@@ -25,7 +25,10 @@ import tc.oc.pgm.match.Party;
 import tc.oc.pgm.mutation.types.KitMutation;
 import tc.oc.pgm.wool.WoolMatchModule;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.WeakHashMap;
 
 public class TeamChestMutation extends KitMutation {
     final static int SLOT_ID = 17; // Top right
