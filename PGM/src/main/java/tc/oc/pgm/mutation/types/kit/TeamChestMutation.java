@@ -71,7 +71,7 @@ public class TeamChestMutation extends KitMutation {
     public void onChestUse(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
         Optional<MatchPlayer> optPlayer = match().participant((Entity) bukkitPlayer);
-        if (optPlayer.isPresent() ||
+        if (!optPlayer.isPresent() ||
                 !(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) ||
                 event.getItem() == null ||
                 event.getItem().getType() != TOOL_TYPE) {
@@ -93,7 +93,7 @@ public class TeamChestMutation extends KitMutation {
         if (event.getCurrentItem() == null) return;
 
         // No putting blacklisted items (ender chest, possibly wool) into the chest
-        Optional<Inventory> teamChest = getTeamsInventory(event.getActor());
+        Optional<Inventory> teamChest = getTeamsInventory(player);
         if (teamChest.map(teamInventory -> teamInventory.equals(event.getView().getTopInventory())).orElse(false) &&
                 isBlacklistedItem(event.getCurrentItem())) {
             event.setCancelled(true);
