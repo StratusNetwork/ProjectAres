@@ -81,7 +81,7 @@ public class MatchStatsCommand {
         BaseComponent matchRatio = new Component(ChatColor.AQUA).translate("command.matchstats.kdr", FORMAT.format((double) facet.matchKills() / Math.max(facet.deaths(), 1)));
         return Components.join(Components.newline(), Lists.newArrayList(matchKills, matchDeaths, matchRatio));
     }
-
+  
     private void displayStats(CommandSender sender, MatchPlayer player) {
         Audience audience = audiences.get(sender);
         audience.sendMessage(new HeaderComponent(
