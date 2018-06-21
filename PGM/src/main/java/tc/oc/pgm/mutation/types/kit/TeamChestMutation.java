@@ -57,8 +57,8 @@ public class TeamChestMutation extends KitMutation {
 
     @Override
     public void disable() {
-        super.disable();
         teamChests.clear();
+        super.disable();
     }
 
     @Override
