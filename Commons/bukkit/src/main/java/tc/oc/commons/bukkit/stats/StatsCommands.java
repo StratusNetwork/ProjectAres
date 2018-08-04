@@ -65,6 +65,8 @@ public class StatsCommands implements Commands {
                             .translate("stats.cores", new Component(String.format("%,d", (int)(double)stats.get("cores_leaked")), ChatColor.BLUE)));
                     audience.sendMessage(new Component(ChatColor.AQUA)
                             .translate("stats.monuments", new Component(String.format("%,d", (int)(double)stats.get("destroyables_destroyed")), ChatColor.BLUE)));
+                    audience.sendMessage(new Component(ChatColor.AQUA)
+                            .translate("stats.flags", new Component(String.format("%,d", (int)(double)stats.get("flags_captured")), ChatColor.BLUE)));
                 })
         );
     }
