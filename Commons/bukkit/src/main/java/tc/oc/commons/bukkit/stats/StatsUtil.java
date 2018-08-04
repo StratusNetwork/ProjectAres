@@ -32,6 +32,7 @@ public class StatsUtil {
                     map.put("wool_placed", getDoubleValue(stats.get("wool_placed")));
                     map.put("cores_leaked", getDoubleValue(stats.get("cores_leaked")));
                     map.put("destroyables_destroyed", getDoubleValue(stats.get("destroyables_destroyed")));
+                    map.put("flags_captured", getDoubleValue(stats.get("flags_captured")));
                     map.put("tkrate", getDoubleValue(stats.get("tkrate")));
 
                     return map;
@@ -45,6 +46,7 @@ public class StatsUtil {
         map.put("wool_placed", 0.0);
         map.put("cores_leaked", 0.0);
         map.put("destroyables_destroyed", 0.0);
+        map.put("flags_captured", 0.0);
         map.put("tkrate", 0.0);
 
         return map;
