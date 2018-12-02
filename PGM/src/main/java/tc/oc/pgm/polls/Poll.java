@@ -1,37 +1,38 @@
 package tc.oc.pgm.polls;
 
+import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
+import tc.oc.api.docs.PlayerId;
+import tc.oc.commons.core.chat.Audiences;
 import tc.oc.commons.core.chat.Components;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class Poll implements Runnable {
-    protected final Map<String, Boolean> votes = new HashMap<String, Boolean>();
-    protected final long startTime = System.currentTimeMillis();
+
+    public static final String boldAqua = ChatColor.BOLD + "" + ChatColor.AQUA;
+    public static final String normalize = ChatColor.RESET + "" + ChatColor.DARK_AQUA;
+    public static final String separator = ChatColor.RESET + " | ";
+
     protected final PollManager pollManager;
-    protected final Server server;
-    protected String initiator;
-    protected int timeLeftSeconds;
+    protected final PlayerId initiator;
+    protected final Audiences audiences;
 
-    public static String boldAqua = ChatColor.BOLD + "" + ChatColor.AQUA;
-    public static String normalize = ChatColor.RESET + "" + ChatColor.DARK_AQUA;
-    public static String seperator = ChatColor.RESET + " | ";
-
-    public Poll(PollManager pollManager, Server server, String initiator) {
+    @Inject public Poll(PollManager pollManager, PlayerId initiator, Audiences audiences) {
         this.pollManager = pollManager;
-        this.server = server;
         this.initiator = initiator;
-        this.vote(true, initiator);
-        timeLeftSeconds = 60;
+        this.audiences = audiences;
+        this.voteFor(initiator);
     }
 
-    public String getInitiator() {
+    protected final Map<PlayerId, Boolean> votes = new HashMap<>();
+    protected int timeLeftSeconds = 60;
+
+    public PlayerId getInitiator() {
         return this.initiator;
     }
 
@@ -55,9 +56,6 @@ public abstract class Poll implements Runnable {
         return total;
     }
 
-    public long getStartTime() {
-        return this.startTime;
-    }
 
     public int getTimeLeftSeconds() {
         return timeLeftSeconds;
@@ -78,8 +76,8 @@ public abstract class Poll implements Runnable {
     public abstract String getDescriptionMessage();
 
     public String getStatusMessage() {
-        String message = boldAqua + "[Poll] " + this.getTimeLeftSeconds() + normalize + " seconds left" + seperator;
-        message += getActionString() + seperator + formatForAgainst();
+        String message = boldAqua + "[Poll] " + this.getTimeLeftSeconds() + normalize + " seconds left" + separator;
+        message += getActionString() + separator + formatForAgainst();
 
         return message;
     }
@@ -106,12 +104,16 @@ public abstract class Poll implements Runnable {
         );
     }
 
-    public boolean hasVoted(String playerName) {
-        return this.votes.containsKey(playerName);
+    public boolean hasVoted(PlayerId playerId) {
+        return this.votes.containsKey(playerId);
     }
 
-    public void vote(boolean yes, String playerName) {
-        this.votes.put(playerName, yes);
+    public void voteFor(PlayerId playerId) {
+        this.votes.put(playerId, true);
+    }
+
+    public void voteAgainst(PlayerId playerId) {
+        this.votes.put(playerId, false);
     }
 
     @Override
@@ -120,8 +122,8 @@ public abstract class Poll implements Runnable {
         if(timeLeftSeconds <= 0) {
             this.pollManager.endPoll(PollEndReason.Completed);
         } else if(timeLeftSeconds % 15 == 0 || (timeLeftSeconds < 15 && timeLeftSeconds % 5 == 0)) {
-            this.server.broadcastMessage(this.getStatusMessage());
-            this.server.broadcast(tutorialMessage());
+            this.audiences.all().sendMessage(this.getStatusMessage());
+            this.audiences.all().sendMessage(tutorialMessage());
         }
         this.decrementTimeLeft();
     }

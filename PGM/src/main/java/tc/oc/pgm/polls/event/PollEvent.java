@@ -1,6 +1,7 @@
-package tc.oc.pgm.polls;
+package tc.oc.pgm.polls.event;
 
 import org.bukkit.event.Event;
+import tc.oc.pgm.polls.Poll;
 
 /**
  * Represents an event related to a poll.

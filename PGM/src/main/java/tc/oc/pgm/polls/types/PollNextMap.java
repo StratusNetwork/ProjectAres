@@ -1,24 +1,32 @@
-package tc.oc.pgm.polls;
+package tc.oc.pgm.polls.types;
 
-import org.bukkit.Server;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import tc.oc.api.docs.PlayerId;
 import tc.oc.api.docs.User;
 import tc.oc.commons.bukkit.tokens.TokenUtil;
+import tc.oc.commons.core.chat.Audiences;
 import tc.oc.pgm.map.PGMMap;
 import tc.oc.pgm.match.MatchManager;
+import tc.oc.pgm.polls.Poll;
+import tc.oc.pgm.polls.PollManager;
 
 public class PollNextMap extends Poll {
+
+    public interface Factory {
+        PollNextMap create(CommandSender sender, PGMMap nextMap, PlayerId playerId);
+    }
+
     private final MatchManager mm;
     private final PGMMap nextMap;
-    private CommandSender sender;
     private User user;
 
-    public PollNextMap(PollManager pollManager, Server server, CommandSender sender, String initiator, MatchManager mm, PGMMap nextMap) {
-        super(pollManager, server, initiator);
+    @AssistedInject PollNextMap(@Assisted CommandSender sender, @Assisted PGMMap nextMap, @Assisted PlayerId playerId, PollManager pollManager, Audiences audiences, MatchManager mm) {
+        super(pollManager, playerId, audiences);
         this.mm = mm;
         this.nextMap = nextMap;
-        this.sender = sender;
         if (sender instanceof Player) {
             user = TokenUtil.getUser((Player)sender);
         }

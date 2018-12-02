@@ -101,10 +101,13 @@ public class PunishmentFormatter {
 
         parts.addAll(Components.repeat(Components::blank, 3));
 
-        parts.add(new Component(new TranslatableComponent("punishment.screen.rules", Links.rulesLink())));
+        if (!punishment.off_record()) {
+            parts.add(new Component(new TranslatableComponent("punishment.screen.rules", Links.rulesLink())));
 
-        parts.add(new Component(new TranslatableComponent("punishment.screen.appeal", Links.appealLink())));
-
+            parts.add(new Component(new TranslatableComponent("punishment.screen.appeal", Links.appealLink())));
+        } else {
+            parts.add(new Component(new TranslatableComponent("punishment.screen.off_record")));
+        }
         return Components.join(Components.newline(), parts);
 
     }

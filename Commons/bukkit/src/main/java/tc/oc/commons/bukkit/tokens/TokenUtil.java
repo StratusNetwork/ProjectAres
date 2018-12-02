@@ -1,10 +1,13 @@
 package tc.oc.commons.bukkit.tokens;
 
+import com.sk89q.minecraft.util.commands.CommandException;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import tc.oc.api.bukkit.users.BukkitUserStore;
 import tc.oc.api.docs.PlayerId;
 import tc.oc.api.users.CreditTokensRequest;
 import tc.oc.api.users.UserService;
+import tc.oc.commons.bukkit.commands.CommandUtils;
 import tc.oc.commons.bukkit.util.SyncPlayerExecutorFactory;
 import tc.oc.api.docs.User;
 
@@ -21,6 +24,10 @@ public class TokenUtil {
 
     public static User getUser(Player player) {
         return userStore.getUser(player);
+    }
+
+    public static User getUser(CommandSender sender) throws CommandException {
+        return getUser(CommandUtils.senderToPlayer(sender));
     }
 
     public static void giveMapTokens(PlayerId playerId, int count) {

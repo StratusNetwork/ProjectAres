@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListenableFuture;
 import tc.oc.api.docs.Server;
 import tc.oc.api.docs.virtual.ServerDoc;
@@ -29,6 +30,12 @@ public class MutationQueue {
             .stream()
             .flatMap(Mutation::fromString)
             .collect(Collectors.toList());
+    }
+
+    public Collection<Mutation> mutationsAvailable() {
+        Collection<Mutation> availableMutations = Sets.newHashSet(Mutation.values());
+        availableMutations.removeAll(mutations());
+        return availableMutations;
     }
 
     public ListenableFuture<Server> clear() {

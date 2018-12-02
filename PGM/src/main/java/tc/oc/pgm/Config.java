@@ -59,18 +59,6 @@ public class Config {
 
     }
 
-    public static class Poll {
-        public static Path getPollAbleMapPath() {
-            Path pollPath = Paths.get(getConfiguration().getString("poll.maps.path", "default.txt"));
-            if(!pollPath.isAbsolute()) pollPath = PGM.getMatchManager().getPluginDataFolder().resolve(pollPath);
-            return pollPath;
-        }
-
-        public static boolean enabled() {
-            return getConfiguration().getBoolean("poll.enabled", true);
-        }
-    }
-
     public static class Broadcast {
         public static boolean title() {
             return getConfiguration().getBoolean("broadcast.title", true);

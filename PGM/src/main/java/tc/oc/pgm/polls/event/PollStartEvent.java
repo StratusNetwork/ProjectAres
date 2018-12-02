@@ -1,6 +1,7 @@
-package tc.oc.pgm.polls;
+package tc.oc.pgm.polls.event;
 
 import org.bukkit.event.HandlerList;
+import tc.oc.pgm.polls.Poll;
 
 /**
  * Called when a poll first starts.

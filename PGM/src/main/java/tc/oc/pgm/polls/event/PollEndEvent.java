@@ -1,6 +1,8 @@
-package tc.oc.pgm.polls;
+package tc.oc.pgm.polls.event;
 
 import org.bukkit.event.HandlerList;
+import tc.oc.pgm.polls.Poll;
+import tc.oc.pgm.polls.PollEndReason;
 
 /**
  * Called when a poll ends.

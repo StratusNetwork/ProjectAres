@@ -1,33 +1,33 @@
 package tc.oc.pgm.polls;
 
+import com.google.inject.Inject;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import tc.oc.pgm.match.Match;
-import tc.oc.pgm.match.MatchManager;
+import tc.oc.commons.core.chat.Audience;
+import tc.oc.commons.core.chat.Audiences;
+import tc.oc.pgm.polls.event.PollEndEvent;
 
 public class PollListener implements Listener {
-    @SuppressWarnings("unused")
-    private final PollManager pollManager;
-    private final MatchManager mm;
 
-    public PollListener(PollManager pollManager, MatchManager mm) {
-        this.pollManager = pollManager;
-        this.mm = mm;
+    private final Audiences audiences;
+
+    @Inject PollListener(Audiences audiences) {
+        this.audiences = audiences;
     }
 
     @EventHandler
     public void onPollEnd(PollEndEvent event) {
         if(event.getReason() == PollEndReason.Completed) {
-            Match match = this.mm.getCurrentMatch();
+            Audience audience = audiences.localServer();
             if(event.getPoll().isSuccessful()) {
-                match.sendMessage(Poll.normalize + "The poll " + event.getPoll().getDescriptionMessage()
-                        + Poll.normalize + " has succeeded" + Poll.seperator);
-                match.sendMessage(event.getPoll().formatForAgainst());
+                audience.sendMessage(Poll.normalize + "The poll " + event.getPoll().getDescriptionMessage()
+                        + Poll.normalize + " has succeeded" + Poll.separator);
+                audience.sendMessage(event.getPoll().formatForAgainst());
                 event.getPoll().executeAction();
             } else {
-                match.sendMessage(Poll.normalize + "The poll " + event.getPoll().getDescriptionMessage()
-                        + Poll.normalize + " has failed" + Poll.seperator);
-                match.sendMessage(event.getPoll().formatForAgainst());
+                audience.sendMessage(Poll.normalize + "The poll " + event.getPoll().getDescriptionMessage()
+                        + Poll.normalize + " has failed" + Poll.separator);
+                audience.sendMessage(event.getPoll().formatForAgainst());
             }
         }
     }

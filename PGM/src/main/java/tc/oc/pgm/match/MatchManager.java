@@ -23,13 +23,13 @@ import org.bukkit.event.EventBus;
 import tc.oc.api.minecraft.MinecraftService;
 import tc.oc.api.util.Permissions;
 import tc.oc.commons.core.logging.Loggers;
-import tc.oc.pgm.PGM;
 import tc.oc.pgm.development.MapErrorTracker;
 import tc.oc.pgm.events.SetNextMapEvent;
 import tc.oc.pgm.map.MapLibrary;
 import tc.oc.pgm.map.MapLoader;
 import tc.oc.pgm.map.MapNotFoundException;
 import tc.oc.pgm.map.PGMMap;
+import tc.oc.pgm.polls.PollBlacklist;
 import tc.oc.pgm.rotation.FileRotationProviderFactory;
 import tc.oc.pgm.rotation.RotationManager;
 import tc.oc.pgm.rotation.RotationState;
@@ -50,6 +50,7 @@ public class MatchManager implements MatchFinder {
     private final EventBus eventBus;
     private final MatchLoader matchLoader;
     private final MinecraftService minecraftService;
+    private final PollBlacklist pollBlacklist;
     private @Nullable RotationManager rotationManager;
 
     /** Custom set next map. */
@@ -67,7 +68,8 @@ public class MatchManager implements MatchFinder {
                          FileRotationProviderFactory fileRotationProviderFactory,
                          EventBus eventBus,
                          MatchLoader matchLoader,
-                         MinecraftService minecraftService) throws MapNotFoundException {
+                         MinecraftService minecraftService,
+                         PollBlacklist pollBlacklist) throws MapNotFoundException {
 
         this.pluginDataFolder = pluginDataFolder;
         this.mapErrorTracker = mapErrorTracker;
@@ -79,6 +81,7 @@ public class MatchManager implements MatchFinder {
         this.eventBus = eventBus;
         this.matchLoader = matchLoader;
         this.minecraftService = minecraftService;
+        this.pollBlacklist = pollBlacklist;
     }
 
     @Override
@@ -118,7 +121,7 @@ public class MatchManager implements MatchFinder {
     public Set<PGMMap> loadMapsAndRotations() throws MapNotFoundException {
         Set<PGMMap> maps = loadNewMaps();
         loadRotations();
-        PGM.getPollableMaps().loadPollableMaps();
+        pollBlacklist.loadPollBlacklist();
         return maps;
     }
 

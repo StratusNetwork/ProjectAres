@@ -1,30 +1,30 @@
-package tc.oc.pgm.polls;
+package tc.oc.pgm.polls.types;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import tc.oc.api.docs.PlayerId;
 import tc.oc.api.docs.User;
 import tc.oc.commons.bukkit.tokens.TokenUtil;
-import tc.oc.pgm.Config;
+import tc.oc.commons.core.chat.Audiences;
 import tc.oc.pgm.mutation.Mutation;
-import tc.oc.pgm.mutation.MutationMatchModule;
+import tc.oc.pgm.polls.Poll;
+import tc.oc.pgm.polls.PollManager;
 
 public class PollMutation extends Poll {
 
+    public interface Factory {
+        PollMutation create(CommandSender sender, Mutation mutation, PlayerId playerId);
+    }
+
     private Mutation mutation;
-    private CommandSender sender;
-    private MutationMatchModule module;
-    private String mutationName;
     private User user;
 
-    public PollMutation(PollManager pollManager, Server server, CommandSender sender, Mutation mutation,
-                        MutationMatchModule module) {
-        super(pollManager, server, sender.getName());
+    @AssistedInject PollMutation(@Assisted CommandSender sender, @Assisted Mutation mutation, @Assisted PlayerId playerId, PollManager pollManager, Audiences audiences) {
+        super(pollManager, playerId, audiences);
         this.mutation = mutation;
-        this.sender = sender;
-        this.module = module;
-        this.mutationName = mutationName;
         if (sender instanceof Player) {
             user = TokenUtil.getUser((Player)sender);
         }
