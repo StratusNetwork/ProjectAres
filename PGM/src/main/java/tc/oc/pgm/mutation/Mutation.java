@@ -77,7 +77,8 @@ public enum Mutation {
     SHARING       (SharingScenario.class,       Material.STONE_HOE, false, true),
     WEAKESTLINK   (WeakestLinkScenario.class,   Material.WEB, false, true),
     CHICKEN       (ChickenScenario.class,       Material.RAW_CHICKEN, false, true),
-    HASTE         (HasteScenario.class,         Material.DIAMOND_PICKAXE, false, true);
+    HASTE         (HasteScenario.class,         Material.DIAMOND_PICKAXE, false, true),
+    ENCHANTLESS   (EnchantlessScenario.class,   Material.ENCHANTMENT_TABLE, false, true);
 
     public static final String TYPE_KEY = "mutation.type.";
     public static final String DESCRIPTION_KEY = ".desc";
