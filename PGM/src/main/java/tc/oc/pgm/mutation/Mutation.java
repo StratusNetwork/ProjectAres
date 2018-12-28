@@ -18,6 +18,7 @@ import tc.oc.pgm.mutation.types.targetable.ApocalypseMutation;
 import tc.oc.pgm.mutation.types.targetable.BomberMutation;
 import tc.oc.pgm.mutation.types.targetable.LightningMutation;
 import tc.oc.pgm.mutation.types.uhc.BloodDiamondsScenario;
+import tc.oc.pgm.mutation.types.uhc.BloodLapisScenario;
 import tc.oc.pgm.mutation.types.uhc.ChickenScenario;
 import tc.oc.pgm.mutation.types.uhc.HasteScenario;
 import tc.oc.pgm.mutation.types.uhc.SharingScenario;
@@ -69,7 +70,8 @@ public enum Mutation {
     MOBLESS       (MoblessScenario.class,       Material.MONSTER_EGG, false, true),
     TIMBER        (TimberScenario.class,        Material.WOOD_AXE, false, true),
     FLOWERPOWER   (FlowerPowerScenario.class,   Material.RED_ROSE, false, true),
-    BLOODDIAMONDS (BloodDiamondsScenario.class, Material.REDSTONE, false, true),
+    BLOODDIAMONDS (BloodDiamondsScenario.class, Material.DIAMOND_ORE, false, true),
+    BLOODLAPIS    (BloodLapisScenario.class,    Material.LAPIS_ORE, false, true),
     GONEFISHING   (GoneFishingScenario.class,   Material.FISHING_ROD, false, true),
     DELAYEDMOBS   (DelayedMobsScenario.class,   Material.WATCH, false, true),
     SHARING       (SharingScenario.class,       Material.STONE_HOE, false, true),
