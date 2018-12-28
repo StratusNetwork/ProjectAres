@@ -34,6 +34,8 @@ import tc.oc.pgm.mutation.types.uhc.SkyHighScenario;
 import tc.oc.pgm.mutation.types.uhc.TimberScenario;
 import tc.oc.pgm.mutation.types.uhc.TimeBombScenario;
 import tc.oc.pgm.mutation.types.uhc.WeakestLinkScenario;
+import tc.oc.pgm.mutation.types.uhc.EnchantlessScenario;
+import tc.oc.pgm.mutation.types.uhc.BarebonesScenario;
 
 import java.util.stream.Stream;
 
