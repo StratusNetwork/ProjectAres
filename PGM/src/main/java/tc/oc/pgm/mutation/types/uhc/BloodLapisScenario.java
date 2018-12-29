@@ -21,7 +21,6 @@ public class BloodLapisScenario extends UHCMutation.Impl {
         }
     }
 
-    @Override
     public void disable() {
         super.disable();
     }

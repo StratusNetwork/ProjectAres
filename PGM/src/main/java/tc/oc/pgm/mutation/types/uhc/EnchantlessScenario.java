@@ -31,8 +31,6 @@ public class EnchantlessScenario extends UHCMutation.Impl {
         }
     }
 
-
-    @Override
     public void disable() {
         super.disable();
     }

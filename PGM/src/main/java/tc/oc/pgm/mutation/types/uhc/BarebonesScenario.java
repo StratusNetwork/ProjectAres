@@ -88,7 +88,6 @@ public class EnchantlessScenario extends UHCMutation.Impl {
         event.getDrops().add(new ItemStack (Material.ARROW, 32));
     }
 
-    @Override
     public void disable() {
         super.disable();
     }
