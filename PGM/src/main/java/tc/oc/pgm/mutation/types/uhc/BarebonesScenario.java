@@ -59,13 +59,15 @@ public class EnchantlessScenario extends UHCMutation.Impl {
         }
     }
 
-    // Disable anvil crafting
+    // Disable anvil interaction
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onItemCraft(CraftItemEvent event) {
-        CraftingInventory inventory = event.getInventory();
-
-        if (inventory.getResult() != null && inventory.getResult().getType().equals(Material.ANVIL)) {
-            inventory.setResult(new ItemStack(Material.AIR));
+    public void onInteract(PlayerInteractEvent event) {
+        if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Block block = event.getClickedBlock();
+            if(block.getType() == Material.ANVIL) {
+                event.setCancelled(true);
+                }
+            }
         }
     }
 
