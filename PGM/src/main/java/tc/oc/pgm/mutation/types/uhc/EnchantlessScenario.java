@@ -19,7 +19,6 @@ public class EnchantlessScenario extends UHCMutation.Impl {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEnchantItem(EnchantItemEvent event) {
         e.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
