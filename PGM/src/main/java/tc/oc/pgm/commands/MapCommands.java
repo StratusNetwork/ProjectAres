@@ -19,7 +19,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.command.CommandSender;
 import tc.oc.api.docs.User;
 import tc.oc.api.docs.virtual.MapDoc;
@@ -286,7 +285,7 @@ public class MapCommands implements Commands {
     )
     @CommandPermissions("pgm.rotation.view")
     public static void rotation(CommandContext args, final CommandSender sender) throws CommandException {
-        final RotationState rotation = CommandUtils.getRotation(WordUtils.capitalizeFully(args.getFlag('n')), sender);
+        final RotationState rotation = CommandUtils.getRotation(args.getFlag('n'), sender);
         int page = args.getInteger(0, 1);
 
         String header = PGMTranslations.get().t("command.map.currentRotation.title", sender);
