@@ -1,11 +1,15 @@
 package tc.oc.pgm.mutation.types.uhc;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -13,8 +17,8 @@ import tc.oc.pgm.match.Match;
 import tc.oc.pgm.mutation.Mutation;
 import tc.oc.pgm.mutation.types.UHCMutation;
 
-public class EnchantlessScenario extends UHCMutation.Impl {
-    public EnchantlessScenario(Match match, Mutation mutation) {
+public class BarebonesScenario extends UHCMutation.Impl {
+    public BarebonesScenario(Match match, Mutation mutation) {
         super(match, mutation);
     }
 
@@ -22,40 +26,12 @@ public class EnchantlessScenario extends UHCMutation.Impl {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
+        Player player = event.getActor();
+        Material type = block.getType();
 
-        if (block.getType() == Material.REDSTONE_ORE) {
-            event.getItemDrop().remove();
-            block.getState().update();
-            event.getBlock().setType(Material.AIR);
-            player.sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
-        }
-
-        if (block.getType() == Material.LAPIS_ORE) {
-            event.getItemDrop().remove();
-            block.getState().update();
-            event.getBlock().setType(Material.AIR);
-            player.sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
-        }
-
-        if (block.getType() == Material.EMERALD_ORE) {
-            event.getItemDrop().remove();
-            block.getState().update();
-            event.getBlock().setType(Material.AIR);
-            player.sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
-        }
-
-        if (block.getType() == Material.GOLD_ORE) {
-            event.getItemDrop().remove();
-            block.getState().update();
-            event.getBlock().setType(Material.AIR);
-            player.sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
-        }
-
-        if (block.getType() == Material.DIAMOND_ORE) {
-            event.getItemDrop().remove();
-            block.getState().update();
-            event.getBlock().setType(Material.AIR);
-            player.sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
+        if (type == Material.REDSTONE_ORE || type == Material.LAPIS_ORE || type == Material.EMERALD_ORE || type == Material.DIAMOND_ORE || type == Material.GOLD_ORE) {
+            event.setDropItems(false);
+            player.sendMessage(message("mutation.type.barebones.disabledOre", ChatColor.RED));
         }
     }
 
@@ -66,7 +42,7 @@ public class EnchantlessScenario extends UHCMutation.Impl {
             Block block = event.getClickedBlock();
             if(block.getType() == Material.ANVIL) {
                 event.setCancelled(true);
-                }
+                event.getPlayer().sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
             }
         }
     }
@@ -78,6 +54,7 @@ public class EnchantlessScenario extends UHCMutation.Impl {
 
         if (inventory.getResult() != null && inventory.getResult().getType().equals(Material.ENCHANTMENT_TABLE)) {
             inventory.setResult(new ItemStack(Material.AIR));
+            event.getActor().sendMessage(message("mutation.type.barebones.disabled", ChatColor.RED));
         }
     }
 
@@ -87,11 +64,7 @@ public class EnchantlessScenario extends UHCMutation.Impl {
         event.getDrops().add(new ItemStack (Material.DIAMOND, 1));
         event.getDrops().add(new ItemStack (Material.GOLDEN_APPLE, 1));
         event.getDrops().add(new ItemStack (Material.STRING, 2));
-        event.getDrops().add(new ItemStack (Material.ARROW, 32));
-    }
-
-    public void disable() {
-        super.disable();
+        event.getDrops().add(new ItemStack(Material.ARROW, 32));
     }
 
 }
