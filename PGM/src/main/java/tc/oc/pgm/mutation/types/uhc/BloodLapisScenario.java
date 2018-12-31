@@ -20,9 +20,4 @@ public class BloodLapisScenario extends UHCMutation.Impl {
             damage(event.getPlayer(), event.getPlayer().getHealth() - 1);
         }
     }
-
-    public void disable() {
-        super.disable();
-    }
-
 }

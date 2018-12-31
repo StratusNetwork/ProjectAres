@@ -82,11 +82,6 @@ public class InsomniaScenario extends UHCMutation.Impl {
     }
 
     @Override
-    public void enable() {
-        super.enable();
-    }
-
-    @Override
     public void disable() {
         sleptPlayers.clear();
 

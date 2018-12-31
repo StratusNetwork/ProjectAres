@@ -83,10 +83,4 @@ public class FlowerPowerScenario extends UHCMutation.Impl {
         bannedItems.add(Material.FISHING_ROD);
         bannedItems.add(Material.SHIELD);
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

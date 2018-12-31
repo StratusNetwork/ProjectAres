@@ -73,10 +73,4 @@ public class SharingScenario extends UHCMutation.Impl {
             player.sendMessage(message("mutation.type.sharing.received", ChatColor.GREEN, "a diamond", event.getPlayer().getDisplayName(player.getBukkit())));
         }
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

@@ -18,7 +18,7 @@ public class EnchantlessScenario extends UHCMutation.Impl {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEnchantItem(EnchantItemEvent event) {
-        e.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -29,9 +29,4 @@ public class EnchantlessScenario extends UHCMutation.Impl {
             inventory.setResult(new ItemStack(Material.AIR));
         }
     }
-
-    public void disable() {
-        super.disable();
-    }
-
 }

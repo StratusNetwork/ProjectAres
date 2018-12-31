@@ -38,10 +38,4 @@ public class ChickenScenario extends UHCMutation.Impl {
         }
 
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

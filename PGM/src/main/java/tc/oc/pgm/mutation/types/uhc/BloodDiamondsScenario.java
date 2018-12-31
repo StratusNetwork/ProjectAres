@@ -20,10 +20,4 @@ public class BloodDiamondsScenario extends UHCMutation.Impl {
             damage(event.getPlayer(), event.getPlayer().getHealth() - 1);
         }
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

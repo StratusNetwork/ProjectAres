@@ -88,10 +88,4 @@ public class CutCleanScenario extends UHCMutation.Impl {
             }
         }
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

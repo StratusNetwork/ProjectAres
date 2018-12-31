@@ -32,10 +32,4 @@ public class GoneFishingScenario extends UHCMutation.Impl {
     public void onBegin(ParticipantReleaseEvent event) {
         event.getPlayer().getBukkit().setLevel(2000);
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

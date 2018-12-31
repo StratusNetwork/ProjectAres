@@ -30,10 +30,4 @@ public class DelayedMobsScenario extends UHCMutation.Impl {
             event.setCancelled(true);
         }
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

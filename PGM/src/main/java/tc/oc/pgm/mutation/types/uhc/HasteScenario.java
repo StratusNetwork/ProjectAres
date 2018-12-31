@@ -55,10 +55,4 @@ public class HasteScenario extends UHCMutation.Impl {
         result.addUnsafeEnchantment(Enchantment.DIG_SPEED, 3);
         result.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

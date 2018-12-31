@@ -61,10 +61,4 @@ public class TimberScenario extends UHCMutation.Impl {
         leaves.add(Material.LEAVES);
         leaves.add(Material.LEAVES_2);
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

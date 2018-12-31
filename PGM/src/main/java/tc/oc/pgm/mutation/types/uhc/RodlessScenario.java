@@ -23,10 +23,4 @@ public class RodlessScenario extends UHCMutation.Impl {
             inventory.setResult(new ItemStack(Material.AIR));
         }
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

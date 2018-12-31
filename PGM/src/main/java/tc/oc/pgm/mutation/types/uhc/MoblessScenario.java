@@ -29,10 +29,4 @@ public class MoblessScenario extends UHCMutation.Impl {
     public void onPlayerDeath(CreatureSpawnEvent event) {
         event.setCancelled(true);
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }

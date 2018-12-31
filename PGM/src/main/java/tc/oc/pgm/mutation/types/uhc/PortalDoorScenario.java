@@ -399,10 +399,4 @@ public class PortalDoorScenario extends UHCMutation.Impl {
                 location.getBlockY() == doorLocation.getBlockY() &&
                 location.getBlockZ() == doorLocation.getBlockZ());
     }
-
-    @Override
-    public void disable() {
-        super.disable();
-    }
-
 }
