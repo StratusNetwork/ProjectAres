@@ -23,7 +23,7 @@ public class GoneFishingScenario extends UHCMutation.Impl {
         ItemMeta meta = rod.getItemMeta();
         meta.addEnchant(Enchantment.DURABILITY, 250, true);
         meta.addEnchant(Enchantment.LUCK, 250, true);
-        meta.addEnchant(Enchantment.LURE, 250, true);
+        meta.addEnchant(Enchantment.LURE, 5, true);
         rod.setItemMeta(meta);
         return new ItemStack[]{rod, new ItemStack(Material.ANVIL, 20)};
     }
