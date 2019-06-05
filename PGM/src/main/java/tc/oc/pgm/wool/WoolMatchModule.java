@@ -63,7 +63,7 @@ public class WoolMatchModule extends MatchModule implements Listener {
                           .collect(Collectors.toImmutableList());
     }
 
-    private boolean isObjectiveWool(ItemStack stack) {
+    public boolean isObjectiveWool(ItemStack stack) {
         if(stack.getType() == Material.WOOL) {
             for(MonumentWool wool : this.wools) {
                 if(wool.getDefinition().isObjectiveWool(stack)) return true;

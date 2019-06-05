@@ -42,7 +42,8 @@ public enum Mutation {
     BREAD      (BreadMutation.class,       Material.BREAD),
     BOAT       (BoatMutation.class,        Material.BOAT, false),
     TOOLS      (ToolsMutation.class,       Material.DIAMOND_PICKAXE),
-    APOCALYPSE (ApocalypseMutation.class,  Material.NETHER_STAR);
+    APOCALYPSE (ApocalypseMutation.class,  Material.NETHER_STAR),
+    TEAMCHEST  (TeamChestMutation.class,   Material.ENDER_CHEST);
 
     public static final String TYPE_KEY = "mutation.type.";
     public static final String DESCRIPTION_KEY = ".desc";
