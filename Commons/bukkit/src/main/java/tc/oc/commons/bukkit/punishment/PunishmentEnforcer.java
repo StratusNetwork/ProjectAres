@@ -171,7 +171,7 @@ public class PunishmentEnforcer implements Enableable, MessageListener {
     }
 
     private boolean viewByLookup(CommandSender sender, Punishment punishment) {
-        return sender.hasPermission(punishment.stale() ? LOOK_UP_STALE : LOOK_UP);
+        return sender.hasPermission(punishment.stale() ? LOOK_UP_STALE : LOOK_UP) && viewByType(sender, punishment);
     }
 
     private boolean viewBySilent(CommandSender sender, Punishment punishment) {
